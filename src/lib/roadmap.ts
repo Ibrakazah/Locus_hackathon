@@ -23,7 +23,7 @@ const GAP_TASK: Record<string, { title: (g: string) => string; kind: TaskKind }>
   budget_gap: { title: (d) => `${d}`, kind: 'finance' as TaskKind },
   activity_gap: { title: (d) => `${d}`, kind: 'info' as TaskKind },
   timeline_ok: { title: (d) => `${d}`, kind: 'info' as TaskKind },
-  deadline_alert: { title: (d) => `⚠️ ${d}`, kind: 'application' },
+  deadline_alert: { title: (d) => `Срочно: ${d}`, kind: 'application' },
 };
 
 export interface BuildArgs {
@@ -83,7 +83,7 @@ export function buildRoadmap({ profile, goal, recs, prev, now }: BuildArgs): Roa
     const ucas = CALENDAR.find((c) => c.id === 'ucas-oxbridge')!;
     const d = daysUntil(now, ucas.date);
     if (d > 0 && d <= 60) {
-      tasks.push({ id: 'base:ucas', programId: null, title: `⚠️ UCAS Oxbridge: ${ucas.date.slice(0, 10)} — осталось ${d} дн.: Personal Statement`, deadline: ucas.date, kind: 'application', done: false, source: ucas.source });
+      tasks.push({ id: 'base:ucas', programId: null, title: `UCAS Oxbridge: ${ucas.date.slice(0, 10)} — осталось ${d} дн.: Personal Statement`, deadline: ucas.date, kind: 'application', done: false, source: ucas.source });
     }
   }
 

@@ -14,19 +14,21 @@ export default function DiagnosisPage() {
   const recs = recommend(profile, CATALOG, now);
   const d = diagnosis(profile, recs);
   return (
-    <main className="flex flex-col gap-4">
+    <main className="flex flex-col gap-6">
       <PathIndicator step={3} label="Диагностика" />
-      <h2 className="text-center text-2xl font-extrabold tracking-tight">🔍 Разбор профиля</h2>
-      <Card className="rise border-emerald-400/20" >
-        <h3 className="text-sm font-bold text-emerald-300">💪 Сильные стороны</h3>
-        <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm leading-relaxed">{d.strengths.map((s) => <li key={s}>{s}</li>)}</ul>
+      <h2 className="font-serif text-5xl tracking-[-0.01em]">Разбор профиля</h2>
+      <Card className="rise">
+        <h3 className="text-sm font-semibold tracking-tight">Сильные стороны</h3>
+        <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed">{d.strengths.map((s) => <li key={s}>{s}</li>)}</ul>
       </Card>
-      <Card className="rise border-amber-400/20" >
-        <h3 className="text-sm font-bold text-amber-300">🎯 Ограничения</h3>
-        <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm leading-relaxed text-muted">{d.limits.map((s) => <li key={s}>{s}</li>)}</ul>
+      <Card className="rise">
+        <h3 className="text-sm font-semibold tracking-tight">Ограничения</h3>
+        <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed text-muted">{d.limits.map((s) => <li key={s}>{s}</li>)}</ul>
       </Card>
-      <Card className="rise btn-glow !border-violet-400/30" ><p className="text-center font-semibold">{d.goal}</p></Card>
-      <Link href="/recommendations"><Button>К рекомендациям →</Button></Link>
+      <Card className="rise flex items-center justify-center border-ink py-8 text-center">
+        <p className="max-w-md text-lg font-semibold tracking-tight">{d.goal}</p>
+      </Card>
+      <Link href="/recommendations"><Button full>К рекомендациям →</Button></Link>
     </main>
   );
 }

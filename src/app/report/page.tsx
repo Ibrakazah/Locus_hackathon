@@ -56,55 +56,66 @@ export default function ReportPage() {
   };
 
   return (
-    <main className="flex flex-col gap-6">
+    <main className="flex flex-col gap-10">
       <PathIndicator step={8} label="Итог: финальный отчёт" />
 
-      <section className="glass btn-glow !border-violet-400/40 flex flex-col items-center gap-3 rounded-3xl p-6 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-violet-300">✨ ИИ-отчёт готов</p>
-        <h2 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-          Твой маршрут <span className="grad-text">собран</span>
+      <section className="flex flex-col items-start gap-6 py-10">
+        <span className="rounded-full border border-line bg-paper px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+          ИИ-отчёт
+        </span>
+        <h2 className="font-serif text-6xl leading-[0.95] tracking-[-0.02em] sm:text-7xl">
+          Твой маршрут <span className="italic">собран</span>
         </h2>
-        <p className="max-w-md text-sm leading-relaxed text-muted">
-          Ниже — единый итог: диагноз, куда подходишь, что делать следующим шагом. Всё по твоей анкете, без выдуманных гарантий.
+        <p className="max-w-md text-base leading-relaxed text-muted">
+          Единый итог: диагноз, куда подходишь, что делать следующим шагом. Всё по твоей анкете, без выдуманных гарантий.
         </p>
-        <Button onClick={copy} className="max-w-xs">{copied ? '✓ Скопировано' : '📋 Копировать отчёт'}</Button>
+        <Button className="mt-2" onClick={copy}>{copied ? 'Скопировано ✓' : 'Копировать отчёт'}</Button>
       </section>
 
       <Card>
-        <h3 className="text-sm font-bold">🎯 Цель маршрута</h3>
-        <p className="mt-1 text-base font-semibold">
-          {goalProgram ? `${getUniversity(goalProgram.universityId)?.name} — ${goalProgram.title}` : recs[0] ? `${getUniversity(recs[0].universityId)?.name} — ${CATALOG.find((x) => x.id === recs[0].programId)?.title ?? recs[0].programId}` : 'не выбрана'}
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Цель маршрута</h3>
+        <p className="mt-2 text-xl font-semibold tracking-tight">
+          {goalProgram ? `${getUniversity(goalProgram.universityId)?.name} — ${goalProgram.title}` : recs[0] ? `${getUniversity(recs[0].universityId)?.name} — ${CATALOG.find((x) => x.id === recs[0].programId)?.title ?? 'лидер анкеты'}` : 'не выбрана'}
         </p>
-        <p className="mt-1 text-xs text-faint">{d.goal}</p>
+        <p className="mt-1 text-sm text-muted">{d.goal}</p>
       </Card>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Card className="border-emerald-400/20">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-300">💪 Сильные стороны</h3>
-          <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm">{d.strengths.map((s) => <li key={s}>{s}</li>)}</ul>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">Сильные стороны</h3>
+          <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed">{d.strengths.map((s) => <li key={s}>{s}</li>)}</ul>
         </Card>
-        <Card className="border-amber-400/20">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300">🎯 Ограничения</h3>
-          <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm text-muted">{d.limits.map((s) => <li key={s}>{s}</li>)}</ul>
+        <Card>
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">Ограничения</h3>
+          <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed text-muted">{d.limits.map((s) => <li key={s}>{s}</li>)}</ul>
         </Card>
       </div>
 
-      <section>
-        <h3 className="mb-2 text-base font-bold">🏆 Топ-3 для тебя</h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+      <section className="flex flex-col gap-4">
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Топ-3 для тебя</h3>
+          <span className="font-mono text-[11px] text-faint">{top.length} программ</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
           {top.map((r, i) => {
             const p = CATALOG.find((x) => x.id === r.programId)!;
             const u = getUniversity(r.universityId)!;
             return (
-              <Card key={r.programId} className="flex flex-col gap-2">
-                <p className="text-xs font-bold text-faint">#{i + 1}</p>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <Badge kind={r.matchLevel} />
-                  {r.reach && <Badge kind="reach" />}
+              <Card key={r.programId} className="rise flex flex-col gap-4" >
+                <div className="flex items-center justify-between">
+                  <span className="font-serif text-2xl italic">{['I', 'II', 'III'][i]}</span>
+                  <div className="flex flex-wrap justify-end gap-1.5">
+                    <Badge kind={r.matchLevel} />
+                    {r.reach && <Badge kind="reach" />}
+                  </div>
                 </div>
-                <p className="text-sm font-bold">{u.name}</p>
-                <p className="text-xs text-muted">{p.title}</p>
-                <p className="text-[11px] text-faint">「{FIT_LABEL[r.matchLevel]}」{r.gaps.length ? ` · блокеры: ${r.gaps.length}` : ` · ${r.grantNote}`}</p>
+                <div>
+                  <p className="text-base font-semibold tracking-tight">{u.name}</p>
+                  <p className="mt-0.5 text-sm text-muted">{p.title}</p>
+                </div>
+                <p className="mt-auto text-xs leading-relaxed text-muted">
+                  {r.gaps.length ? `Блокеры: ${r.gaps.length}` : 'Блокеров нет — осталась подача'}
+                </p>
               </Card>
             );
           })}
@@ -112,14 +123,14 @@ export default function ReportPage() {
       </section>
 
       <Card>
-        <div className="flex items-center justify-between text-xs text-muted">
-          <span>Прогресс по плану · {doneCount} из {tasks.length}</span>
-          <span className="font-bold text-violet-300">{pct}%</span>
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Прогресс по плану</h3>
+          <span className="font-mono text-[11px] text-faint">{doneCount} из {tasks.length} · {pct}%</span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all" style={{ width: `${pct}%` }} />
+        <div className="mt-3 h-px w-full bg-line">
+          <div className="h-px bg-ink transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
-        <ul className="mt-3 flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
+        <ul className="mt-4 flex list-disc flex-col gap-1.5 pl-5 text-sm text-muted">
           {soon.map((t) => (
             <li key={t.id}>{t.title}{t.deadline ? ` — до ${t.deadline.slice(0, 10)}` : ''}</li>
           ))}
@@ -127,15 +138,18 @@ export default function ReportPage() {
       </Card>
 
       {next && (
-        <Card className="!border-violet-400/40 py-6 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet-300">⚡ Следующий шаг</p>
-          <p className="mt-2 text-lg font-bold">{next.title}{next.deadline ? ` · до ${next.deadline.slice(0, 10)}` : ''}</p>
+        <Card className="flex items-center justify-between gap-4 border-ink py-8">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Следующий шаг</p>
+            <p className="mt-1 text-lg font-semibold tracking-tight">{next.title}{next.deadline ? ` · до ${next.deadline.slice(0, 10)}` : ''}</p>
+          </div>
+          <span className="font-mono text-2xl text-faint">→</span>
         </Card>
       )}
 
-      <Card className="border-amber-400/20">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300">⚠️ Честно</h3>
-        <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
+      <Card>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Честно</h3>
+        <ul className="mt-3 flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed text-muted">
           <li>Порог — это минимум для участия в конкурсе, а не гарантия гранта.</li>
           <li>Факты без источника помечены [демо-данные] — проверь перед подачей.</li>
           <li>Это ориентир для разговора с приёмной комиссией, а не официальный документ.</li>
@@ -143,9 +157,9 @@ export default function ReportPage() {
       </Card>
 
       <div className="flex flex-col gap-2">
-        <Button onClick={() => { reset(); router.push('/'); }}>🔄 Начать заново</Button>
-        <Link href="/next-step"><Button variant="ghost">← Следующее действие</Button></Link>
-        <Link href="/"><Button variant="ghost">На главную</Button></Link>
+        <Button full onClick={() => { reset(); router.push('/'); }}>Начать заново</Button>
+        <Link href="/next-step"><Button full variant="ghost">← Следующее действие</Button></Link>
+        <Link href="/"><Button full variant="ghost">На главную</Button></Link>
       </div>
     </main>
   );

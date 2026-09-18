@@ -28,26 +28,26 @@ export default function RoadmapPage() {
   const pct = tasks.length ? Math.round(((tasks.length - open) / tasks.length) * 100) : 0;
 
   return (
-    <main className="flex flex-col gap-5">
+    <main className="flex flex-col gap-8">
       <PathIndicator step={6} label="Roadmap" />
-      <h2 className="text-center text-2xl font-extrabold tracking-tight">🗺️ Твой <span className="grad-text">план</span></h2>
-      <div className="glass rounded-2xl p-4">
-        <div className="flex items-center justify-between text-xs text-muted">
-          <span>Открыто задач: {open} из {tasks.length}</span>
-          <span className="font-bold text-violet-300">{pct}%</span>
-        </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all" style={{ width: `${pct}%` }} />
+      <div className="flex items-baseline justify-between">
+        <h2 className="font-serif text-5xl tracking-[-0.01em]">Твой план</h2>
+        <span className="font-mono text-[11px] text-faint">{pct}%</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-muted">Открыто задач: {open} из {tasks.length}</span>
+        <div className="h-px flex-1 bg-line">
+          <div className="h-px bg-ink transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
       </div>
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3">
         {tasks.map((t, i) => (
           <div key={t.id} style={{ ['--i' as string]: Math.min(i, 6) }} className="rise">
             <TaskCard title={t.title} deadline={t.deadline} done={t.done} source={t.source} onToggle={() => toggleTask(t.id)} />
           </div>
         ))}
       </div>
-      <Link href="/next-step"><Button>Следующее действие ✨ →</Button></Link>
+      <Link href="/next-step"><Button full>Следующее действие →</Button></Link>
     </main>
   );
 }

@@ -2,30 +2,26 @@
 import React from 'react';
 import type { MatchLevel } from '@/lib/types';
 
-export function Button({ children, onClick, variant, className = '', type }: {
-  children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'ghost'; className?: string; type?: 'button' | 'submit';
+export function Button({ children, onClick, variant, className = '', type, full = false }: {
+  children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'ghost'; className?: string; type?: 'button' | 'submit'; full?: boolean;
 }) {
-  const base = 'inline-flex w-full items-center justify-center whitespace-nowrap rounded-2xl px-5 py-3.5 text-[15px] font-semibold transition-all duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+  const base = `inline-flex items-center justify-center whitespace-nowrap rounded-md px-6 py-3 text-[15px] font-semibold transition-all duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${full ? 'w-full' : ''}`;
   const color = variant === 'ghost'
-    ? 'glass text-foreground hover:bg-white/10'
-    : 'btn-glow bg-gradient-to-r from-violet-500 to-blue-500 text-white hover:brightness-110';
+    ? 'border border-line bg-transparent text-ink hover:border-ink'
+    : 'bg-ink text-white hover:bg-deep';
   return <button type={type ?? 'button'} onClick={onClick} className={`${base} ${color} ${className}`}>{children}</button>;
 }
 
 export function Card({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
-  return <div style={style} className={`glass rounded-3xl p-5 ${className}`}>{children}</div>;
+  return <div style={style} className={`rounded-xl border border-line bg-paper p-6 ${className}`}>{children}</div>;
 }
 
-export function Chip({ children, active, onClick }: { children: React.ReactNode; active?: boolean; onClick?: () => void }) {
+export function Chip({ children, active, onClick, className = '', full = false }: { children: React.ReactNode; active?: boolean; onClick?: () => void; className?: string; full?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.97] ${
-        active
-          ? 'border-violet-400/60 bg-violet-500/20 text-violet-200 shadow-[0_0_16px_rgba(139,92,246,0.35)]'
-          : 'glass text-muted hover:text-foreground'
-      }`}
+      className={`min-h-[48px] rounded-md px-4 py-2 text-sm transition-all duration-200 active:scale-[0.97] ${full ? 'w-full text-left' : ''} ${active ? 'border border-ink bg-ink text-white' : 'border border-line bg-paper text-ink hover:border-ink'} ${className}`}
     >
       {children}
     </button>
@@ -34,11 +30,11 @@ export function Chip({ children, active, onClick }: { children: React.ReactNode;
 
 export function Input({ label, hint, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   return (
-    <label className="flex flex-col gap-2 text-sm">
-      <span className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</span>
+    <label className="flex flex-col gap-1.5 text-sm">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{label}</span>
       <input
         {...props}
-        className="glass min-h-[44px] rounded-2xl px-4 py-2.5 text-base font-medium text-foreground outline-none transition-all placeholder:text-faint focus:border-violet-400/60 focus:shadow-[0_0_16px_rgba(139,92,246,0.25)]"
+        className="min-h-[44px] rounded-md border border-line bg-paper px-4 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-faint focus:border-ink"
       />
       {hint ? <span className="text-xs text-faint">{hint}</span> : null}
     </label>
@@ -46,31 +42,34 @@ export function Input({ label, hint, ...props }: React.InputHTMLAttributes<HTMLI
 }
 
 const LEVEL_STYLE: Record<MatchLevel, string> = {
-  fits: 'border-emerald-400/40 bg-emerald-500/15 text-emerald-300',
-  close: 'border-amber-400/40 bg-amber-500/15 text-amber-300',
-  fails: 'border-rose-400/40 bg-rose-500/15 text-rose-300',
+  fits: 'bg-acc-green-bg text-acc-green-fg',
+  close: 'bg-acc-amber-bg text-acc-amber-fg',
+  fails: 'bg-acc-rose-bg text-acc-rose-fg',
 };
 const LEVEL_TEXT: Record<MatchLevel, string> = {
-  fits: '✨ Проходишь порог',
-  close: '🎯 Близко',
-  fails: '🌧️ Не проходишь',
+  fits: 'Проходишь порог',
+  close: 'Близко к порогу',
+  fails: 'Не проходишь',
 };
 
 export function Badge({ kind, children }: { kind: 'source' | 'demo' | 'reach' | MatchLevel; children?: React.ReactNode }) {
-  if (kind === 'source') return <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold text-muted">🔗 Источник</span>;
-  if (kind === 'demo') return <span className="inline-block rounded-full border border-amber-400/40 bg-amber-500/15 px-3 py-1 text-[11px] font-semibold text-amber-300">🧪 Демо-данные</span>;
-  if (kind === 'reach') return <span className="inline-block rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-3 py-1 text-[11px] font-semibold text-white">🚀 Конкурсный отбор</span>;
-  return <span className={`inline-block rounded-full border px-3 py-1 text-[11px] font-semibold ${LEVEL_STYLE[kind]}`}>{children ?? LEVEL_TEXT[kind]}</span>;
+  const base = 'inline-block rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.08em]';
+  if (kind === 'source') return <span className={`${base} bg-acc-blue-bg text-acc-blue-fg`}>Источник</span>;
+  if (kind === 'demo') return <span className={`${base} bg-acc-amber-bg text-acc-amber-fg`}>Демо-данные</span>;
+  if (kind === 'reach') return <span className={`${base} bg-bone text-ink`}>Конкурсный отбор</span>;
+  return <span className={`${base} ${LEVEL_STYLE[kind]}`}>{children ?? LEVEL_TEXT[kind]}</span>;
 }
 
 export function PathIndicator({ step, total = 8, label }: { step: number; total?: number; label: string }) {
+  const pct = (step / total) * 100;
   return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <p className="text-xs font-medium text-faint">Шаг {step} из {total} · {label}</p>
-      <div className="flex w-full gap-1.5">
-        {Array.from({ length: total }).map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full ${i < step ? 'bg-gradient-to-r from-violet-500 to-blue-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]' : 'bg-white/10'}`} />
-        ))}
+    <div className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">{label}</span>
+        <span className="font-mono text-[11px] text-faint">{step} / {total}</span>
+      </div>
+      <div className="h-px w-full bg-line">
+        <div className="h-px bg-ink transition-all duration-500" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -80,12 +79,12 @@ export function TaskCard({ title, deadline, done, onToggle, source }: {
   title: string; deadline: string | null; done: boolean; onToggle: () => void; source: string;
 }) {
   return (
-    <div className={`glass rounded-2xl p-4 transition-all ${done ? 'opacity-60' : 'hover:bg-white/[0.07]'}`}>
+    <div className={`rounded-xl border border-line bg-paper p-4 transition-colors ${done ? 'opacity-55' : 'hover:border-ink/30'}`}>
       <label className="flex cursor-pointer items-start gap-3">
-        <input type="checkbox" checked={done} onChange={onToggle} className="mt-1 size-5 shrink-0 cursor-pointer accent-violet-500" />
+        <input type="checkbox" checked={done} onChange={onToggle} className="mt-1 size-4 shrink-0 cursor-pointer" />
         <span>
-          <span className={`text-[15px] font-medium ${done ? 'text-muted line-through' : 'text-foreground'}`}>{title}</span>
-          <span className="mt-1 block text-xs text-faint">
+          <span className={`text-[15px] ${done ? 'text-muted line-through' : 'text-ink'}`}>{title}</span>
+          <span className="mt-1 block font-mono text-[11px] text-faint">
             {deadline ? `до ${deadline.slice(0, 10)} · ` : ''}{source}
           </span>
         </span>
@@ -99,11 +98,11 @@ export function Sheet({ open, onClose, title, children }: {
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm p-0 sm:items-center sm:p-4" onClick={onClose}>
-      <div className="glass max-h-[85dvh] w-full max-w-lg overflow-auto rounded-t-3xl !bg-[#0c0c16]/95 p-6 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-bold">{title}</h3>
-          <button onClick={onClose} aria-label="Закрыть" className="glass flex size-9 items-center justify-center rounded-full text-muted hover:text-foreground">✕</button>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/20 backdrop-blur-sm p-0 sm:items-center sm:p-4" onClick={onClose}>
+      <div className="max-h-[85dvh] w-full max-w-lg overflow-auto rounded-t-xl border border-line bg-paper p-6 shadow-[0_24px_64px_rgba(0,0,0,0.08)] sm:rounded-xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-5 flex items-center justify-between">
+          <h3 className="text-base font-semibold tracking-tight">{title}</h3>
+          <button onClick={onClose} aria-label="Закрыть" className="flex size-8 items-center justify-center rounded-md border border-line text-muted transition-colors hover:border-ink hover:text-ink">×</button>
         </div>
         {children}
       </div>
@@ -113,9 +112,38 @@ export function Sheet({ open, onClose, title, children }: {
 
 export function Skeleton() {
   return (
-    <div className="glass animate-pulse rounded-3xl p-5">
-      <div className="h-4 w-2/3 rounded bg-white/10" />
-      <div className="mt-3 h-4 w-1/2 rounded bg-white/5" />
+    <div className="animate-pulse rounded-xl border border-line bg-paper p-6">
+      <div className="h-4 w-2/3 rounded bg-line" />
+      <div className="mt-3 h-4 w-1/2 rounded bg-line/60" />
+    </div>
+  );
+}
+
+// «Магнитная» строка выбора: тянется к курсору и увеличивается при наведении.
+export function Magnet({ children, className = '', pull = 10, scale = 1.045 }: {
+  children: React.ReactNode; className?: string; pull?: number; scale?: number;
+}) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  return (
+    <div
+      ref={ref}
+      onMouseMove={(e) => {
+        const el = ref.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top + r.height / 2);
+        const px = Math.max(-pull, Math.min(pull, dx * 0.05));
+        const py = Math.max(-pull, Math.min(pull, dy * 0.05));
+        el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) scale(${scale})`;
+      }}
+      onMouseLeave={(e) => {
+        const el = ref.current;
+        if (el) el.style.transform = '';
+      }}
+      className={`will-change-transform transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${className}`}
+    >
+      {children}
     </div>
   );
 }

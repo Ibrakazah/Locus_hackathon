@@ -29,30 +29,30 @@ export default function NextStepPage() {
   const pct = tasks.length ? Math.round((tasks.filter((t) => t.done).length / tasks.length) * 100) : 0;
 
   return (
-    <main className="flex flex-col gap-5">
+    <main className="flex flex-col gap-8">
       <PathIndicator step={7} label="Следующее действие" />
-      <Card className="rise btn-glow !border-violet-400/40 py-8 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-violet-300">⚡ Сделай сейчас</p>
+      <Card className="rise flex flex-col items-center gap-4 border-ink py-14 text-center">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">Сделай сейчас</p>
         {step ? (
-          <div className="mt-3 flex flex-col gap-4">
-            <h2 className="mx-auto max-w-md text-2xl font-extrabold leading-tight tracking-tight">{step.title}</h2>
-            <TaskCard title={step.deadline ? `Дедлайн: ${step.deadline.slice(0, 10)}` : step.source} deadline={null} done={step.done} source={step.source} onToggle={() => toggleTask(step.id)} />
-          </div>
+          <>
+            <h2 className="max-w-md font-serif text-4xl leading-tight tracking-[-0.01em]">{step.title}</h2>
+            <div className="w-full max-w-md">
+              <TaskCard title={step.deadline ? `Дедлайн: ${step.deadline.slice(0, 10)}` : step.source} deadline={null} done={step.done} source={step.source} onToggle={() => toggleTask(step.id)} />
+            </div>
+          </>
         ) : (
-          <p className="mt-3 text-2xl font-extrabold">Всё выполнено 🎉</p>
+          <h2 className="font-serif text-4xl tracking-[-0.01em]">Всё выполнено</h2>
         )}
       </Card>
-      <div className="glass rounded-2xl p-4">
-        <div className="flex items-center justify-between text-xs text-muted">
-          <span>Прогресс</span><span className="font-bold text-violet-300">{pct}%</span>
-        </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all" style={{ width: `${pct}%` }} />
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-muted">Прогресс · {pct}%</span>
+        <div className="h-px flex-1 bg-line">
+          <div className="h-px bg-ink transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Link href="/report"><Button>✨ Итоговый отчёт →</Button></Link>
-        <Link href="/roadmap"><Button variant="ghost">← Весь план</Button></Link>
+        <Link href="/report"><Button full>Итоговый отчёт →</Button></Link>
+        <Link href="/roadmap"><Button full variant="ghost">← Весь план</Button></Link>
         <button onClick={reset} className="text-xs text-faint">Сбросить всё</button>
       </div>
     </main>

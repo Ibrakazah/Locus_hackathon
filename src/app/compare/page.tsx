@@ -10,11 +10,11 @@ import { recommend } from '@/lib/engine';
 function rowsFor(ids: string[]): { label: string; vals: string[] }[] {
   const ps = ids.map((id) => getProgram(id)!);
   const rows: { label: string; vals: string[] }[] = [
-    { label: '📍 Город', vals: ps.map((p) => p.city) },
-    { label: '🗣️ Язык', vals: ps.map((p) => p.language) },
-    { label: '💰 Стоимость/год', vals: ps.map((p) => `${p.tuitionPerYear.toLocaleString('ru-RU')} ${p.currency}`) },
-    { label: '🏆 Грант', vals: ps.map((p) => p.grantPassScore ? `от ${p.grantPassScore.score} (${p.grantPassScore.year})` : 'проходные — проверить') },
-    { label: '📅 Дедлайн', vals: ps.map((p) => p.closesAt?.slice(0, 10) ?? '—') },
+    { label: 'Город', vals: ps.map((p) => p.city) },
+    { label: 'Язык', vals: ps.map((p) => p.language) },
+    { label: 'Стоимость/год', vals: ps.map((p) => `${p.tuitionPerYear.toLocaleString('ru-RU')} ${p.currency}`) },
+    { label: 'Грант', vals: ps.map((p) => p.grantPassScore ? `от ${p.grantPassScore.score} (${p.grantPassScore.year})` : 'проходные — проверить') },
+    { label: 'Дедлайн', vals: ps.map((p) => p.closesAt?.slice(0, 10) ?? '—') },
   ];
   if (ps.some((p) => p.track === 'ent')) rows.push({ label: 'ЕНТ, мин.', vals: ps.map((p) => p.admission.entMin ? String(p.admission.entMin) : '—') });
   if (ps.some((p) => p.track === 'sat')) rows.push({ label: 'SAT, мин.', vals: ps.map((p) => p.admission.satMin ? String(p.admission.satMin) : p.reach ? 'обязателен, порога нет' : '—') });
@@ -45,39 +45,35 @@ function CompareInner() {
   const choose = (id: string) => { setGoal(id); router.push('/roadmap'); };
 
   return (
-    <main className="flex flex-col gap-5">
+    <main className="flex flex-col gap-8">
       <PathIndicator step={5} label="Сравнение" />
-      <h2 className="text-center text-2xl font-extrabold tracking-tight">⚖️ Сравнение</h2>
-      <div className="grid grid-cols-2 gap-2.5">
+      <h2 className="font-serif text-5xl tracking-[-0.01em]">Сравнение</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {[pa, pb].map((p) => {
           const u = getUniversity(p.universityId)!;
           const r = recs.find((x) => x.programId === p.id);
           return (
             <Card key={p.id} className="rise">
-              <p className="text-sm font-bold">{u.name}</p>
-              <p className="mt-0.5 text-xs text-muted">{p.title}</p>
-              <div className="mt-2">{r && <Badge kind={r.matchLevel} />}</div>
+              <p className="text-lg font-semibold tracking-tight">{u.name}</p>
+              <p className="mt-0.5 text-sm text-muted">{p.title}</p>
+              <div className="mt-3">{r && <Badge kind={r.matchLevel} />}</div>
             </Card>
           );
         })}
       </div>
       <Card>
         {rows.map((r) => (
-          <div key={r.label} className="border-b border-line py-2.5 last:border-0">
-            <p className="text-xs font-semibold text-faint">{r.label}</p>
-            <div className="mt-0.5 grid grid-cols-2 gap-2 text-sm font-semibold">
+          <div key={r.label} className="border-b border-line py-3 last:border-0">
+            <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-faint">{r.label}</p>
+            <div className="mt-1 grid grid-cols-2 gap-2 text-sm font-semibold">
               <span>{r.vals[0]}</span><span>{r.vals[1]}</span>
             </div>
           </div>
         ))}
       </Card>
-      <div className="flex justify-center gap-2">
-        {ra && <Badge kind={ra.matchLevel} />}
-        {rb && <Badge kind={rb.matchLevel} />}
-      </div>
       <div className="flex flex-col gap-2">
-        <Button onClick={() => choose(a)}>🎯 Цель: {ua.name} →</Button>
-        <Button variant="ghost" onClick={() => choose(b)}>Цель: {ub.name}</Button>
+        <Button full onClick={() => choose(a)}>Цель: {ua.name} →</Button>
+        <Button full variant="ghost" onClick={() => choose(b)}>Цель: {ub.name}</Button>
       </div>
       <Link href="/roadmap" className="text-center text-xs text-faint">К плану без цели →</Link>
     </main>
