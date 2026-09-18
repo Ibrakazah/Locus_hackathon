@@ -63,7 +63,7 @@ export function Badge({ kind, children }: { kind: 'source' | 'demo' | 'reach' | 
   return <span className={`inline-block rounded-full border px-3 py-1 text-[11px] font-semibold ${LEVEL_STYLE[kind]}`}>{children ?? LEVEL_TEXT[kind]}</span>;
 }
 
-export function PathIndicator({ step, total = 7, label }: { step: number; total?: number; label: string }) {
+export function PathIndicator({ step, total = 8, label }: { step: number; total?: number; label: string }) {
   return (
     <div className="flex flex-col items-center gap-2 text-center">
       <p className="text-xs font-medium text-faint">Шаг {step} из {total} · {label}</p>

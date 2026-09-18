@@ -1,4 +1,5 @@
 import type { Profile, Recommendation } from './types';
+import { CATALOG, getUniversity } from '@/data/catalog';
 
 export function diagnosis(profile: Profile, recs: Recommendation[]): { strengths: string[]; limits: string[]; goal: string } {
   const strengths: string[] = [];
@@ -13,6 +14,13 @@ export function diagnosis(profile: Profile, recs: Recommendation[]): { strengths
   else limits.push('Пока нет fits — работаем через close-варианты и подготовку');
   if (profile.budgetUsd != null) strengths.push(`Бюджет $${profile.budgetUsd.toLocaleString('ru-RU')}/год задан — фильтр честный`);
   const top = recs[0];
-  const goal = top ? `Цель: ${top.programId} — ${top.matchLevel === 'fits' ? 'проходишь порог' : top.matchLevel === 'close' ? 'близко, нужен рывок' : 'пока не проходишь, нужен план Б'}.` : 'Цель пока не выбрана.';
+  const topName = top ? programName(top) : null;
+  const goal = topName ? `Цель: ${topName} — ${top!.matchLevel === 'fits' ? 'проходишь порог' : top!.matchLevel === 'close' ? 'близко, нужен рывок' : 'пока не проходишь, нужен план Б'}.` : 'Цель пока не выбрана.';
   return { strengths, limits, goal };
+}
+
+function programName(r: Recommendation): string {
+  const p = CATALOG.find((x) => x.id === r.programId);
+  const u = getUniversity(r.universityId);
+  return u ? `${u.name} — ${p?.title ?? r.programId}` : r.programId;
 }

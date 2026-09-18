@@ -33,8 +33,9 @@ function CompareInner() {
   const a = params.get('a') ?? recs[0]?.programId;
   const b = params.get('b') ?? recs[1]?.programId;
   if (!a || !b) return <p className="text-center text-sm text-muted">Нет программ для сравнения</p>;
-  const pa = getProgram(a)!;
-  const pb = getProgram(b)!;
+  const pa = getProgram(a);
+  const pb = getProgram(b);
+  if (!pa || !pb) return <p className="text-center text-sm text-muted">Не найдены программы для сравнения</p>;
   const ua = getUniversity(pa.universityId)!;
   const ub = getUniversity(pb.universityId)!;
   const rows = rowsFor([a, b]);

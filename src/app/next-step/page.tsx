@@ -51,8 +51,8 @@ export default function NextStepPage() {
         </div>
       </div>
       <div className="flex flex-col gap-2">
+        <Link href="/report"><Button>✨ Итоговый отчёт →</Button></Link>
         <Link href="/roadmap"><Button variant="ghost">← Весь план</Button></Link>
-        <Link href="/"><Button>На главную</Button></Link>
         <button onClick={reset} className="text-xs text-faint">Сбросить всё</button>
       </div>
     </main>

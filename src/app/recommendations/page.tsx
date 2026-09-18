@@ -18,11 +18,11 @@ export default function RecommendationsPage() {
   const [newBudget, setNewBudget] = useState('5000');
   const [newPriority, setNewPriority] = useState<Priority>('prestige');
   const [diff, setDiff] = useState<{ programId: string; from: number; to: number; reason: string }[] | null>(null);
-  if (!hydrated) return <p className="text-center text-sm text-muted">Загрузка…</p>;
-
   const now = useMemo(() => new Date(), []);
   const recs = useMemo(() => recommend(profile, CATALOG, now), [profile, now]);
   const cities = useMemo(() => ['all', ...Array.from(new Set(recs.map((r) => getUniversity(r.universityId)?.city ?? '')))], [recs]);
+  if (!hydrated) return <p className="text-center text-sm text-muted">Загрузка…</p>;
+
   const shown = recs.filter((r) => city === 'all' || getUniversity(r.universityId)?.city === city).slice(0, 6);
 
   const toggleSel = (id: string) =>
