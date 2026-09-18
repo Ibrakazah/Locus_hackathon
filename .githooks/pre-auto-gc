@@ -1,0 +1,16 @@
+#!/bin/sh
+# Octarin-managed passthrough wrapper for git's `pre-auto-gc` hook.
+#
+# GENERATED FILE — DO NOT EDIT. Regenerate with:
+#     python3 clients/git/gen_repo_template.py
+#
+# Setting core.hooksPath makes git stop reading .git/hooks ENTIRELY, so every
+# hook name needs a stub here or the repo's own hooks silently stop running.
+# All logic (chaining, stdin + argument forwarding, exit-code passthrough) lives
+# in octarin-dispatch.sh; Octarin itself does work only in the POST hooks.
+#
+# The stub set comes from clients/git/hook_names.py::HOOK_NAMES — add or remove
+# a name there, not here.
+OCTARIN_HOOK_NAME=pre-auto-gc
+export OCTARIN_HOOK_NAME
+exec "$(dirname "$0")/octarin-dispatch.sh" "$@"
