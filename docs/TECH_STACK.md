@@ -12,24 +12,33 @@
 | Язык | TypeScript (strict) | 5 | типы Profile/Program/Gap ловят ошибки до рантайма |
 | Стили | Tailwind CSS | v4 | дизайн-система без CSS-файлов, тёмная тема из коробки |
 | Качество | ESLint (eslint-config-next) | 9 | `npm run lint` чистый — требование перед коммитом |
+| Тесты | Vitest | 5 | `npm test` — юнит-тесты чистых функций (`lib/`) |
+| Состояние | Zustand (+ persist) | 5 | профиль/цель/чек-листы, ключ `route-v1` в localStorage |
 | Рантайм | Node.js | 24 | локально и на Vercel |
 | Пакетник | npm | 11 | `package-lock.json` коммитится |
 
 ## 2. Архитектура (по ролям команды)
 
 ```
-src/app/**            → UI (Ибрахим): страницы, визард-шаги, дизайн-система
-src/lib/flow/**       → flow: state machine визарда, шаги C1–C4/E1–E5, roadmap
-src/lib/engine/**     → engine: профиль, fits/close/fails, матчинг, gaps (чистые функции, без React)
-src/lib/data/**       → data: universities.json + типы (единственный источник данных)
+lib/types/**   → контракт (ветка A): Profile, Program, Recommendation, RoadmapTask
+lib/engine/**  → движок recommend() и пороги (ветка A)
+data/**        → каталог университетов/программ + calendar.ts (ветки A/B)
+lib/store/**   → Zustand store `route-v1` (ветка B)
+lib/roadmap/**, lib/diff/**, lib/text/** → roadmap, diff, тексты (ветка B)
+app/**         → экраны (ветки B и C)
+components/**  → UI-компоненты (ветка C)
 ```
+
+> Структура переведена на корневые `lib/`, `data/`, `app/`, `components/` (по новому плану
+> веток A/B/C). Старый `src/**` выводится из эксплуатации — удаляется отдельным PR.
 
 Правила: engine — чистые функции (тестируются без браузера); данные — только через
 `src/lib/data/index.ts`; UI не считает баллы, engine не рисует.
 
 ## 3. Хранение данных (MVP — без базы)
 
-- Профиль/прогресс: **sessionStorage** (`locus:onboarding:v1`), чек-листы roadmap — там же.
+- Профиль/цель/чек-листы roadmap: **Zustand + persist** (`route-v1`) в `localStorage`. Рекомендации
+  и roadmap не персистятся — пересчитываются из профиля и цели.
 - Каталог вузов: **`universities.json` в репозитории** + `GET /api/universities`.
 - Почему не БД: нет мультидевайса в кейсе, JSON ревьюится в PR, ноль точек отказа на демо.
 
@@ -42,7 +51,6 @@ src/lib/data/**       → data: universities.json + типы (единствен
 | AI-чат / LLM в ядре | кейс запрещает «продукт-чат»; персонификация = правила + данные, не генерация |
 | Библиотека графиков | оси диагностики рисуются CSS-прогрессом (уже есть `Progress`) |
 | next-intl / i18n-фреймворк | два языка (kk/ru) закрываются словарём без зависимостей, если дойдём |
-| Redux/Zustand | визарду хватает `useReducer` + контекст |
 
 ## 5. Опционально (stretch, только если MVP готов и build зелёный)
 
@@ -57,6 +65,7 @@ src/lib/data/**       → data: universities.json + типы (единствен
 npm run dev    # http://localhost:3000
 npm run build  # прод-сборка (должна проходить)
 npm run lint   # ESLint, 0 ошибок
+npm test       # Vitest, юнит-тесты lib/
 ```
 
 Деплой: Vercel → Import из GitHub, framework preset Next.js. Env-переменных для MVP нет.
