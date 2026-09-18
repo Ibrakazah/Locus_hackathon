@@ -41,7 +41,7 @@ export default function RoadmapPage() {
 
   const step = nextStep(tasks);
   const doneCount = tasks.filter((t) => t.done).length;
-  const isEmpty = tasks.length === 0;
+  const profileEmpty = profile.fields.length === 0 && Object.keys(profile.exams).length === 0;
 
   const afterOrder = costMode ? [...recs].reverse() : recs;
 
@@ -77,9 +77,9 @@ export default function RoadmapPage() {
         </div>
       )}
 
-      {isEmpty ? (
+      {profileEmpty ? (
         <div className="border-2 border-dashed border-ink bg-mint-soft p-4 text-sm">
-          <p>Нет задач: заполните профиль (или загрузите демо).</p>
+          <p>Профиль не заполнен — сначала пройдите анкету или загрузите демо.</p>
           <button
             type="button"
             onClick={() => setProfile(DEMO_PROFILE)}

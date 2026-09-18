@@ -43,9 +43,12 @@ export function buildRoadmap({
 }: BuildRoadmapInput): RoadmapTask[] {
   const out: RoadmapTask[] = [];
 
-  // 1. Задачи из gaps цели
+  // 1. Задачи из gaps цели (дедуп по типу — иначе два одинаковых gap дадут один id)
   if (goal) {
+    const seen = new Set<string>();
     for (const gap of goal.gaps) {
+      if (seen.has(gap.type)) continue;
+      seen.add(gap.type);
       const spec = gapTaskSpec(gap, profile);
       out.push({
         id: `${goal.programId}:${gap.type}`,

@@ -29,6 +29,23 @@ describe("buildRoadmap", () => {
     expect(tasks.some((t) => t.id === "p1:score_gap")).toBe(true);
   });
 
+  it("дубликаты gap одного типа не дают дублей id", () => {
+    const dup: Recommendation = {
+      programId: "p1",
+      admissionFit: "close",
+      reach: false,
+      reasons: [],
+      sortScore: 0.5,
+      gaps: [
+        { type: "score_gap", description: "a" },
+        { type: "score_gap", description: "b" },
+      ],
+    };
+    const tasks = buildRoadmap({ profile: T1, goal: dup, prev: [], now: NOW });
+    const ids = tasks.filter((t) => t.id === "p1:score_gap");
+    expect(ids).toHaveLength(1);
+  });
+
   it("11 класс в сентябре: нет задачи «конкурс гранта», есть подготовка", () => {
     const tasks = buildRoadmap({ profile: T1, goal, prev: [], now: NOW });
     expect(tasks.some((t) => t.kind === "grant")).toBe(false);

@@ -42,6 +42,7 @@ export default function NextStepPage() {
 
   const step = nextStep(tasks);
   const doneCount = tasks.filter((t) => t.done).length;
+  const profileEmpty = profile.fields.length === 0 && Object.keys(profile.exams).length === 0;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-8">
@@ -52,7 +53,18 @@ export default function NextStepPage() {
         Сделай сейчас
       </h1>
 
-      {step ? (
+      {profileEmpty ? (
+        <div className="border-2 border-dashed border-ink bg-mint-soft p-4 text-sm">
+          <p>Профиль не заполнен. Загрузите демо-профиль, чтобы увидеть шаг.</p>
+          <button
+            type="button"
+            onClick={() => setProfile(DEMO_PROFILE)}
+            className="mt-3 border-2 border-ink bg-ink px-4 py-2 font-display text-xs font-bold uppercase text-cream shadow-brutal-xs"
+          >
+            Загрузить демо-профиль
+          </button>
+        </div>
+      ) : step ? (
         <div className="border-2 border-ink bg-mint p-6 shadow-brutal">
           <p className="font-display text-2xl font-black leading-tight">{step.title}</p>
           {step.deadline && <p className="mt-1 text-sm text-ink/70">до {step.deadline}</p>}
@@ -68,15 +80,8 @@ export default function NextStepPage() {
           </button>
         </div>
       ) : (
-        <div className="border-2 border-dashed border-ink bg-mint-soft p-4 text-sm">
-          <p>Нет активных задач. Загрузите демо-профиль, чтобы увидеть шаг.</p>
-          <button
-            type="button"
-            onClick={() => setProfile(DEMO_PROFILE)}
-            className="mt-3 border-2 border-ink bg-ink px-4 py-2 font-display text-xs font-bold uppercase text-cream shadow-brutal-xs"
-          >
-            Загрузить демо-профиль
-          </button>
+        <div className="border-2 border-ink bg-mint-soft p-6 text-sm font-bold">
+          Все задачи выполнены. Отличная работа.
         </div>
       )}
 
