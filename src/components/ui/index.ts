@@ -11,4 +11,16 @@ export type { InputProps, SelectProps } from "./input";
 
 export { Slider, Progress, Badge } from "./slider";
 
+export { Chip } from "./chip";
+export type { ChipProps, ChipVariant } from "./chip";
+
+export { Sheet } from "./sheet";
+export type { SheetProps } from "./sheet";
+
+export { PathIndicator } from "./path-indicator";
+export type { StepItem } from "./path-indicator";
+
+export { TaskCard } from "./task-card";
+export type { TaskCardProps } from "./task-card";
+
 export { SiteNav } from "./navbar";

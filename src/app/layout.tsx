@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { SiteNav } from "@/components/ui";
+import { FlowLayout } from "@/components/flow-layout";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="ru" className={`${montserrat.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-cream font-sans text-ink">
         <SiteNav />
-        <div className="flex flex-1 flex-col pt-[60px]">{children}</div>
+        <div className="flex flex-1 flex-col pt-[60px]">
+          <FlowLayout>{children}</FlowLayout>
+        </div>
         <footer className="border-t-[3px] border-ink bg-cream">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-4 py-5 font-display text-xs font-bold uppercase tracking-wide text-smoke sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <span>
