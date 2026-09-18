@@ -1,0 +1,373 @@
+[
+  {
+    "id": "nu",
+    "name": "Назарбаев Университет",
+    "nameKz": "Назарбаев Университеті",
+    "nameEn": "Nazarbayev University",
+    "short": "NU",
+    "city": "Астана",
+    "region": "Акмолинская область",
+    "kinds": ["international", "research"],
+    "website": "https://nu.edu.kz",
+    "foundingYear": 2010,
+    "rating": 92,
+    "accreditation": true,
+    "minEntScore": 65,
+    "admissionExams": ["NUET", "IELTS"],
+    "grantPlaces": 500,
+    "hasContract": true,
+    "tuitionRange": { "min": 7665000, "max": 7665000 },
+    "dormitory": true,
+    "dormitoryCost": 100000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": false,
+    "employmentRate6m": 0.95,
+    "scienceIndex": 98,
+    "programs": [
+      {
+        "code": "6B061",
+        "name": "Информационные системы",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 118,
+        "tuitionPerYear": 7665000
+      },
+      {
+        "code": "6B077",
+        "name": "Математическое и компьютерное моделирование",
+        "group": "engineering",
+        "profileSubjects": ["Физика", "Математика"],
+        "years": 4,
+        "grantMinScore": 112,
+        "tuitionPerYear": 7665000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Подача заявки (граждане РК)",
+        "start": "2026-09-27",
+        "end": "2027-07-24",
+        "source": "https://admissions.nu.edu.kz",
+        "notes": "Регистрационный взнос 10 000 ₸"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  },
+  {
+    "id": "kaznu",
+    "name": "Казахский национальный университет им. аль-Фараби",
+    "nameKz": "Әл-Фараби атындағы Қазақ ұлттық университеті",
+    "nameEn": "Al-Farabi Kazakh National University",
+    "short": "КазНУ",
+    "city": "Алматы",
+    "region": "Алматинская область",
+    "kinds": ["national", "classical"],
+    "website": "https://www.kaznu.kz",
+    "foundingYear": 1934,
+    "rating": 88,
+    "accreditation": true,
+    "minEntScore": 65,
+    "admissionExams": ["ЕНТ"],
+    "grantPlaces": 4800,
+    "hasContract": true,
+    "tuitionRange": { "min": 1500000, "max": 2500000 },
+    "dormitory": true,
+    "dormitoryCost": 25000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": true,
+    "employmentRate6m": 0.82,
+    "scienceIndex": 90,
+    "programs": [
+      {
+        "code": "6B061",
+        "name": "Информационные системы",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 103,
+        "paidMinScore": 65,
+        "tuitionPerYear": 1500000
+      },
+      {
+        "code": "6B031",
+        "name": "Международные отношения",
+        "group": "social",
+        "profileSubjects": ["История", "География"],
+        "years": 4,
+        "grantMinScore": 105,
+        "paidMinScore": 65,
+        "tuitionPerYear": 1500000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Приём документов (бакалавриат)",
+        "start": "2026-06-20",
+        "end": "2026-08-25",
+        "source": "https://www.kaznu.kz"
+      },
+      {
+        "label": "Конкурс грантов",
+        "start": "2026-07-13",
+        "end": "2026-07-20",
+        "source": "https://egov.kz"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  },
+  {
+    "id": "aitu",
+    "name": "Astana IT University",
+    "nameKz": "Astana IT University",
+    "nameEn": "Astana IT University",
+    "short": "AITU",
+    "city": "Астана",
+    "region": "Акмолинская область",
+    "kinds": ["national", "technical"],
+    "website": "https://aitu.edu.kz",
+    "foundingYear": 2019,
+    "rating": 80,
+    "accreditation": true,
+    "minEntScore": 65,
+    "admissionExams": ["ЕНТ"],
+    "grantPlaces": 2500,
+    "hasContract": true,
+    "tuitionRange": { "min": 1300000, "max": 1900000 },
+    "dormitory": true,
+    "dormitoryCost": 20000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": false,
+    "employmentRate6m": 0.9,
+    "scienceIndex": 55,
+    "programs": [
+      {
+        "code": "6B061",
+        "name": "Информационные системы",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 98,
+        "paidMinScore": 65,
+        "tuitionPerYear": 1300000
+      },
+      {
+        "code": "6B063",
+        "name": "Кибербезопасность",
+        "group": "it",
+        "profileSubjects": ["Физика", "Математика"],
+        "years": 4,
+        "grantMinScore": 102,
+        "paidMinScore": 65,
+        "tuitionPerYear": 1300000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Приём документов (бакалавриат)",
+        "start": "2026-06-20",
+        "end": "2026-08-25",
+        "source": "https://aitu.edu.kz"
+      },
+      {
+        "label": "Конкурс грантов",
+        "start": "2026-07-13",
+        "end": "2026-07-20",
+        "source": "https://egov.kz"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  },
+  {
+    "id": "kbtu",
+    "name": "Казахстанско-Британский технический университет",
+    "nameKz": "Қазақстан-Британ техникалық университеті",
+    "nameEn": "Kazakh-British Technical University",
+    "short": "КБТУ",
+    "city": "Алматы",
+    "region": "Алматинская область",
+    "kinds": ["technical", "research"],
+    "website": "https://kbtu.edu.kz",
+    "foundingYear": 2001,
+    "rating": 82,
+    "accreditation": true,
+    "minEntScore": 65,
+    "admissionExams": ["ЕНТ"],
+    "grantPlaces": 900,
+    "hasContract": true,
+    "tuitionRange": { "min": 1900000, "max": 2800000 },
+    "dormitory": true,
+    "dormitoryCost": 35000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": false,
+    "employmentRate6m": 0.93,
+    "scienceIndex": 62,
+    "programs": [
+      {
+        "code": "6B061",
+        "name": "Программная инженерия",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 104,
+        "paidMinScore": 75,
+        "tuitionPerYear": 1900000
+      },
+      {
+        "code": "6B071",
+        "name": "Нефтегазовое дело",
+        "group": "engineering",
+        "profileSubjects": ["Физика", "Математика"],
+        "years": 4,
+        "grantMinScore": 96,
+        "paidMinScore": 70,
+        "tuitionPerYear": 1900000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Приём документов (бакалавриат)",
+        "start": "2026-06-20",
+        "end": "2026-08-25",
+        "source": "https://kbtu.edu.kz"
+      },
+      {
+        "label": "Конкурс грантов",
+        "start": "2026-07-13",
+        "end": "2026-07-20",
+        "source": "https://egov.kz"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  },
+  {
+    "id": "enu",
+    "name": "Евразийский национальный университет им. Л.Н. Гумилёва",
+    "nameKz": "Л.Н. Гумилев атындағы Еуразия ұлттық университеті",
+    "nameEn": "L.N. Gumilyov Eurasian National University",
+    "short": "ЕНУ",
+    "city": "Астана",
+    "region": "Акмолинская область",
+    "kinds": ["national", "classical"],
+    "website": "https://enu.kz",
+    "foundingYear": 1996,
+    "rating": 78,
+    "accreditation": true,
+    "minEntScore": 65,
+    "admissionExams": ["ЕНТ"],
+    "grantPlaces": 4200,
+    "hasContract": true,
+    "tuitionRange": { "min": 1300000, "max": 2000000 },
+    "dormitory": true,
+    "dormitoryCost": 22000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": true,
+    "employmentRate6m": 0.8,
+    "scienceIndex": 74,
+    "programs": [
+      {
+        "code": "6B042",
+        "name": "Юриспруденция",
+        "group": "business",
+        "profileSubjects": ["История", "Право"],
+        "years": 4,
+        "grantMinScore": 108,
+        "paidMinScore": 75,
+        "tuitionPerYear": 1400000
+      },
+      {
+        "code": "6B061",
+        "name": "Информационные системы",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 96,
+        "paidMinScore": 65,
+        "tuitionPerYear": 1300000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Приём документов (бакалавриат)",
+        "start": "2026-06-20",
+        "end": "2026-08-25",
+        "source": "https://enu.kz"
+      },
+      {
+        "label": "Конкурс грантов",
+        "start": "2026-07-13",
+        "end": "2026-07-20",
+        "source": "https://egov.kz"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  },
+  {
+    "id": "kaznmu",
+    "name": "КазНМУ им. С.Д. Асфендиярова",
+    "nameKz": "С.Ж. Асфендияров атындағы Қазақ ұлттық медицина университеті",
+    "nameEn": "Asfendiyarov Kazakh National Medical University",
+    "short": "КазНМУ",
+    "city": "Алматы",
+    "region": "Алматинская область",
+    "kinds": ["national", "medical"],
+    "website": "https://kaznmu.kz",
+    "foundingYear": 1931,
+    "rating": 76,
+    "accreditation": true,
+    "minEntScore": 70,
+    "admissionExams": ["ЕНТ", "Специальный экзамен"],
+    "grantPlaces": 1600,
+    "hasContract": true,
+    "tuitionRange": { "min": 1800000, "max": 2500000 },
+    "dormitory": true,
+    "dormitoryCost": 25000,
+    "library": true,
+    "sportFacilities": true,
+    "militaryDept": false,
+    "employmentRate6m": 0.97,
+    "scienceIndex": 66,
+    "programs": [
+      {
+        "code": "6B101",
+        "name": "Общая медицина",
+        "group": "health",
+        "profileSubjects": ["Биология", "Химия"],
+        "years": 6,
+        "grantMinScore": 112,
+        "paidMinScore": 70,
+        "tuitionPerYear": 2000000
+      },
+      {
+        "code": "6B10105",
+        "name": "Стоматология",
+        "group": "health",
+        "profileSubjects": ["Биология", "Химия"],
+        "years": 5,
+        "grantMinScore": 115,
+        "paidMinScore": 75,
+        "tuitionPerYear": 2400000
+      }
+    ],
+    "deadlines": [
+      {
+        "label": "Приём документов (творческие/спец. экзамены)",
+        "start": "2026-06-20",
+        "end": "2026-08-20",
+        "source": "https://kaznmu.kz"
+      },
+      {
+        "label": "Конкурс грантов",
+        "start": "2026-07-13",
+        "end": "2026-07-20",
+        "source": "https://egov.kz"
+      }
+    ],
+    "sourceUpdated": "2026-09-18"
+  }
+]
