@@ -1,245 +1,98 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, Chip } from "@/components/ui";
-
-interface Recommendation {
-  id: string;
-  name: string;
-  city: string;
-  country: string;
-  program: string;
-  admissionFit: "fits" | "close" | "fails";
-  reach: boolean;
-  reasons: string[];
-  gaps: string[];
-  grantNote?: string;
-  source?: string;
-  demo?: boolean;
-}
-
-const MOCK_RECOMMENDATIONS: Recommendation[] = [
-  {
-    id: "nu-ielts",
-    name: "Nazarbayev University",
-    city: "Астана",
-    country: "KZ",
-    program: "Computer Science (Regular)",
-    admissionFit: "fits",
-    reach: false,
-    reasons: ["IELTS 6.5 закрывает порог 6.0", "GPA 4.7/5.0 > минимума 4.0"],
-    gaps: [],
-    grantNote: "NU не участвует в гос. гранте — обучение платное ($15,000/год)",
-    source: "nu.edu.kz",
-  },
-  {
-    id: "kbtu-it",
-    name: "KBTU",
-    city: "Алматы",
-    country: "KZ",
-    program: "Информационные технологии",
-    admissionFit: "close",
-    reach: false,
-    reasons: ["Топ-технический вуз Казахстана", "Сильная IT-программа"],
-    gaps: ["Нужен ЕНТ с профильными математика+информатика"],
-    source: "kbtu.edu.kz",
-    demo: true,
-  },
-  {
-    id: "kimep-business",
-    name: "KIMEP University",
-    city: "Алматы",
-    country: "KZ",
-    program: "Business Administration",
-    admissionFit: "fits",
-    reach: false,
-    reasons: ["Международный стандарт образования", "Сильные связи с бизнесом"],
-    gaps: ["IELTS 6.0 для подачи"],
-    grantNote: "Проходной балл на грант ~85 [демо-данные]",
-    source: "kimep.kz",
-    demo: true,
-  },
-  {
-    id: "sdu-cs",
-    name: "SDU",
-    city: "Алматы",
-    country: "KZ",
-    program: "Computer Science",
-    admissionFit: "fits",
-    reach: false,
-    reasons: ["Современная программа", "Доступная стоимость"],
-    gaps: [],
-    source: "sdu.edu.kz",
-  },
-  {
-    id: "astana-it",
-    name: "Astana IT University",
-    city: "Астана",
-    country: "KZ",
-    program: "Software Engineering",
-    admissionFit: "fits",
-    reach: false,
-    reasons: ["Узкая специализация IT", "Партнёрства с компаниями"],
-    gaps: [],
-    source: "astanait.edu.kz",
-    demo: true,
-  },
-];
-
-const FIT_TONE: Record<string, "emerald" | "amber" | "red"> = {
-  fits: "emerald",
-  close: "amber",
-  fails: "red",
-};
-
-const FIT_LABEL: Record<string, string> = {
-  fits: "Проходишь порог",
-  close: "Близко",
-  fails: "Не проходишь",
-};
+'use client';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Badge, Button, Card, Chip, PathIndicator, Sheet } from '@/components/ui';
+import { useAppStore, useHydrated } from '@/lib/store';
+import { CATALOG, getUniversity } from '@/data/catalog';
+import { recommend } from '@/lib/engine';
+import { diffRankings } from '@/lib/diff';
+import type { Priority } from '@/lib/types';
 
 export default function RecommendationsPage() {
-  const router = useRouter();
-  const [selected, setSelected] = useState<string[]>([]);
-  const [cityFilter, setCityFilter] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const hydrated = useHydrated();
+  const profile = useAppStore((s) => s.profile);
+  const setProfile = useAppStore((s) => s.setProfile);
+  const [city, setCity] = useState<string>('all');
+  const [sel, setSel] = useState<string[]>([]);
+  const [whatIf, setWhatIf] = useState(false);
+  const [newBudget, setNewBudget] = useState('5000');
+  const [newPriority, setNewPriority] = useState<Priority>('prestige');
+  const [diff, setDiff] = useState<{ programId: string; from: number; to: number; reason: string }[] | null>(null);
+  if (!hydrated) return <p>Загрузка…</p>;
 
-  useEffect(() => {
-    const profileRaw = sessionStorage.getItem("locus:profile") || sessionStorage.getItem("locus:persona");
-    if (!profileRaw) {
-      setRecommendations(MOCK_RECOMMENDATIONS);
-      return;
-    }
-    setRecommendations(MOCK_RECOMMENDATIONS);
-  }, []);
+  const now = useMemo(() => new Date(), []);
+  const recs = useMemo(() => recommend(profile, CATALOG, now), [profile, now]);
+  const cities = useMemo(() => ['all', ...Array.from(new Set(recs.map((r) => getUniversity(r.universityId)?.city ?? '')))], [recs]);
+  const shown = recs.filter((r) => city === 'all' || getUniversity(r.universityId)?.city === city).slice(0, 6);
 
-  const cities = [...new Set(recommendations.map((r) => r.city))];
-  const filtered = cityFilter
-    ? recommendations.filter((r) => r.city === cityFilter)
-    : recommendations;
+  const toggleSel = (id: string) =>
+    setSel((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id].slice(-2)));
 
-  const toggleSelect = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id].slice(0, 2)
-    );
+  const applyWhatIf = () => {
+    const before = recs;
+    const after = recommend({ ...profile, budgetUsd: Number(newBudget) || null, priority: newPriority }, CATALOG, now);
+    setDiff(diffRankings(before, after, `budget priority`));
+    setProfile({ budgetUsd: Number(newBudget) || null, priority: newPriority });
+    setWhatIf(false);
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
-          Рекомендации
-        </h1>
-        <p className="text-sm font-medium text-smoke">
-          Минимум 3 варианта с объяснением «почему»
-        </p>
-      </header>
-
+    <main className="flex flex-col gap-4">
+      <PathIndicator step={4} label="Рекомендации" />
       <div className="flex flex-wrap gap-2">
-        <Chip
-          variant={cityFilter === null ? "selected" : "default"}
-          onClick={() => setCityFilter(null)}
-        >
-          Все города
-        </Chip>
-        {cities.map((c) => (
-          <Chip
-            key={c}
-            variant={cityFilter === c ? "selected" : "default"}
-            onClick={() => setCityFilter(c)}
-          >
-            {c}
-          </Chip>
-        ))}
+        {cities.map((c) => <Chip key={c} active={city === c} onClick={() => setCity(c)}>{c === 'all' ? 'Все города' : c}</Chip>)}
       </div>
-
-      <div className="flex flex-col gap-4">
-        {filtered.map((rec) => (
-          <Card
-            key={rec.id}
-            className={`cursor-pointer transition-all ${
-              selected.includes(rec.id) ? "ring-2 ring-mint" : ""
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => toggleSelect(rec.id)}
-              className="w-full text-left"
-            >
-              <CardHeader>
-                <div>
-                  <p className="font-display text-xs font-black text-mint-deep">
-                    {rec.city}, {rec.country}
-                  </p>
-                  <CardTitle>{rec.name}</CardTitle>
-                  <CardDescription>{rec.program}</CardDescription>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <Badge tone={FIT_TONE[rec.admissionFit]}>
-                    {FIT_LABEL[rec.admissionFit]}
-                  </Badge>
-                  {rec.reach && (
-                    <Badge tone="amber">Конкурсный отбор</Badge>
-                  )}
-                  {rec.demo && (
-                    <Badge tone="slate">демо-данные</Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                <ul className="list-inside list-disc text-sm font-medium text-smoke">
-                  {rec.reasons.map((r) => (
-                    <li key={r}>{r}</li>
-                  ))}
-                </ul>
-                {rec.gaps.length > 0 && (
-                  <ul className="list-inside list-disc text-sm font-medium text-danger">
-                    {rec.gaps.map((g) => (
-                      <li key={g}>{g}</li>
-                    ))}
-                  </ul>
-                )}
-                {rec.grantNote && (
-                  <p className="border-l-4 border-sun pl-3 text-xs font-medium text-smoke">
-                    {rec.grantNote}
-                  </p>
-                )}
-                {rec.source && (
-                  <p className="text-xs text-smoke">
-                    Источник: <span className="font-bold">{rec.source}</span>
-                  </p>
-                )}
-              </CardContent>
-            </button>
-          </Card>
-        ))}
-      </div>
-
-      {selected.length >= 2 && (
-        <div className="fixed bottom-0 inset-x-0 border-t-[3px] border-ink bg-cream p-4">
-          <div className="mx-auto flex max-w-2xl items-center justify-between">
-            <span className="text-sm font-bold">
-              Выбрано {selected.length}/2 для сравнения
-            </span>
-            <Link
-              href={`/compare?ids=${selected.join(",")}`}
-            >
-              <Button>Сравнить</Button>
-            </Link>
-          </div>
-        </div>
+      <Button variant="ghost" onClick={() => setWhatIf(true)}>Изменить вводные (what-if)</Button>
+      {diff && (
+        <Card>
+          <h3 className="font-display text-xs font-extrabold uppercase">Что изменилось</h3>
+          <ul className="mt-1 text-sm">{diff.slice(0, 5).map((d) => (
+            <li key={d.programId}>{d.programId}: {d.from + 1} → {d.to + 1}. {d.reason}</li>
+          ))}</ul>
+        </Card>
       )}
-
-      <div className="flex justify-between pt-4">
-        <Link href="/profile">
-          <Button variant="outline">← Изменить анкету</Button>
+      {shown.map((r) => {
+        const p = CATALOG.find((x) => x.id === r.programId)!;
+        const u = getUniversity(r.universityId)!;
+        return (
+          <Card key={r.programId}>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge kind={r.matchLevel} />
+              {r.reach && <Badge kind="reach" />}
+              {p.demo ? <Badge kind="demo" /> : <Badge kind="source" />}
+            </div>
+            <h3 className="mt-2 font-display text-base font-extrabold">{u.name} · {p.title}</h3>
+            <p className="text-xs text-smoke">{u.city} · {p.language.toUpperCase()} · {p.tuitionPerYear.toLocaleString('ru-RU')} {p.currency}/год</p>
+            {r.reach && <p className="mt-1 text-xs font-bold">Совпадение с требованиями не равно шансу поступления.</p>}
+            <ul className="mt-2 list-disc pl-5 text-sm">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
+            {r.gaps.length > 0 && (
+              <ul className="mt-1 text-sm text-smoke">{r.gaps.map((g) => <li key={g.roadmapTaskId}>• {g.description}</li>)}</ul>
+            )}
+            <p className="mt-1 text-xs text-smoke">{r.grantNote}</p>
+            <p className="mt-1 text-[11px] text-smoke">Источник: {p.source}{p.note ? ` ${p.note}` : ''}</p>
+            <div className="mt-2"><Chip active={sel.includes(r.programId)} onClick={() => toggleSel(r.programId)}>
+              {sel.includes(r.programId) ? '✓ в сравнение' : 'В сравнение'}
+            </Chip></div>
+          </Card>
+        );
+      })}
+      <div className="flex flex-col gap-2">
+        <Link href={sel.length === 2 ? `/compare?a=${sel[0]}&b=${sel[1]}` : '/compare'}>
+          <Button>Сравнить {sel.length === 2 ? '(2)' : ''} →</Button>
         </Link>
-        <Link href="/roadmap">
-          <Button variant="ghost">Roadmap →</Button>
-        </Link>
+        <Link href="/roadmap"><Button variant="ghost">Пропустить сравнение →</Button></Link>
       </div>
+      <Sheet open={whatIf} onClose={() => setWhatIf(false)} title="Изменить вводные">
+        <label className="flex flex-col gap-1 text-sm font-bold">Бюджет $/год
+          <input value={newBudget} onChange={(e) => setNewBudget(e.target.value)} type="number" className="border-[3px] border-ink px-3 py-2" />
+        </label>
+        <div className="mt-3 flex gap-2">
+          {(['cost', 'prestige', 'language'] as Priority[]).map((v) => (
+            <Chip key={v} active={newPriority === v} onClick={() => setNewPriority(v)}>{v}</Chip>
+          ))}
+        </div>
+        <div className="mt-4"><Button onClick={applyWhatIf}>Пересчитать</Button></div>
+      </Sheet>
     </main>
   );
 }

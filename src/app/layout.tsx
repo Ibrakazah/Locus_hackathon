@@ -1,35 +1,35 @@
-import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
-import { SiteNav } from "@/components/ui";
-import { FlowLayout } from "@/components/flow-layout";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Montserrat } from 'next/font/google';
+import Link from 'next/link';
+import './globals.css';
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
+const montserrat = Montserrat({ variable: '--font-montserrat', subsets: ['latin', 'cyrillic'], weight: ['500', '700', '800', '900'] });
 
 export const metadata: Metadata = {
-  title: "Локус·Маршрут — поступление в вузы Казахстана",
-  description:
-    "Персональный маршрут поступления в вузы Казахстана: диагностика, подбор вузов, roadmap и следующий шаг.",
+  title: 'Локус·Маршрут — поступление',
+  description: 'Персональный маршрут поступления: куда, почему подходит, что делать следующим шагом.',
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className={`${montserrat.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-cream font-sans text-ink">
-        <SiteNav />
-        <div className="flex flex-1 flex-col pt-[60px]">
-          <FlowLayout>{children}</FlowLayout>
+        <header className="fixed inset-x-0 top-0 z-40 border-b-[3px] border-ink bg-cream">
+          <nav className="mx-auto flex w-full max-w-2xl items-center justify-between px-4 py-2">
+            <Link href="/" className="font-display text-sm font-black uppercase">Локус·Маршрут</Link>
+            <div className="flex gap-3 font-display text-[11px] font-bold uppercase">
+              <Link href="/profile">Анкета</Link>
+              <Link href="/recommendations">Вузы</Link>
+              <Link href="/roadmap">План</Link>
+            </div>
+          </nav>
+        </header>
+        <div className="flex flex-1 flex-col pt-[52px]">
+          <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-4 sm:px-6">{children}</div>
         </div>
         <footer className="border-t-[3px] border-ink bg-cream">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-4 py-5 font-display text-xs font-bold uppercase tracking-wide text-smoke sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <span>
-              Локус<span className="text-mint-deep">·</span>Маршрут — LOCUS Hackathon 2026
-            </span>
-            <span>Кейс 2 · Анкета → Диагностика → Вузы → Roadmap</span>
+          <div className="mx-auto w-full max-w-2xl px-4 py-3 font-display text-[11px] font-bold uppercase text-smoke">
+            LOCUS Hackathon 2026 · Кейс 2 · Анкета → Диагностика → Вузы → План
           </div>
         </footer>
       </body>

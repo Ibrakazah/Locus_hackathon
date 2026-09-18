@@ -1,315 +1,139 @@
-"use client";
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button, Card, Chip, Input, PathIndicator } from '@/components/ui';
+import { useAppStore, useHydrated } from '@/lib/store';
+import type { Country, Field, Funding, Grade, Route } from '@/lib/types';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button, Card, Chip, Input, Select, Progress } from "@/components/ui";
+// Условия показа — обычные функции-предикаты, не парсер строк.
+const showKzExams = (route: Route) => route !== 'abroad';
+const showAbroad = (route: Route) => route === 'abroad';
 
-type Route = "kz" | "abroad" | "undecided";
-type Grade = "9" | "10" | "11" | "graduate";
-type Funding = "grant_only" | "grant_or_contract" | "contract_ok";
-type ExamKind = "ent" | "ielts" | "toefl" | "sat" | "act" | "nuet";
-type EntStatus = "taken" | "trial" | "not_taken";
-
-interface ProfileState {
-  route: Route;
-  grade: Grade;
-  fields: string[];
-  funding: Funding;
-  exams: Partial<Record<ExamKind, { status: EntStatus; score?: number }>>;
-  interestedInNu: boolean;
-  gpa?: number;
-}
-
-const FIELDS_OPTIONS = [
-  { value: "medicine", label: "Медицина" },
-  { value: "it", label: "IT-инженерия" },
-  { value: "business", label: "Бизнес-экономика" },
-  { value: "law", label: "Право" },
-  { value: "humanities", label: "Гуманитарные" },
-  { value: "science", label: "Естественные" },
-  { value: "creative", label: "Творческие" },
-  { value: "undecided", label: "Не знаю" },
+const FIELDS: { k: Field; label: string }[] = [
+  { k: 'medicine', label: '🏥 Медицина' }, { k: 'it', label: '💻 IT' },
+  { k: 'business', label: '📊 Бизнес' }, { k: 'law', label: '⚖️ Право' },
+  { k: 'humanities', label: '📚 Гуманитарные' }, { k: 'science', label: '🔬 Наука' },
+  { k: 'creative', label: '🎨 Творческие' }, { k: 'undecided', label: '❓ Не знаю' },
+];
+const COUNTRIES: { k: Country; label: string }[] = [
+  { k: 'US', label: '🇺🇸 США' }, { k: 'UK', label: '🇬🇧 UK' }, { k: 'TR', label: '🇹🇷 Турция' },
 ];
 
-const STEPS = ["Маршрут", "Класс", "Направление", "Финансирование", "Экзамены"];
-
 export default function ProfilePage() {
+  const hydrated = useHydrated();
   const router = useRouter();
+  const profile = useAppStore((s) => s.profile);
+  const setProfile = useAppStore((s) => s.setProfile);
   const [step, setStep] = useState(0);
-  const [profile, setProfile] = useState<ProfileState>({
-    route: "kz",
-    grade: "11",
-    fields: [],
-    funding: "grant_or_contract",
-    exams: {},
-    interestedInNu: false,
-  });
+  const [exams, setExams] = useState<string[]>(['ent']);
+  const [entScore, setEntScore] = useState('96');
+  const [ieltsScore, setIeltsScore] = useState('6.5');
+  const [satScore, setSatScore] = useState('1210');
+  if (!hydrated) return <p>Загрузка…</p>;
 
-  const update = (patch: Partial<ProfileState>) =>
-    setProfile((prev) => ({ ...prev, ...patch }));
-
-  const toggleField = (field: string) => {
-    const fields = profile.fields.includes(field)
-      ? profile.fields.filter((f) => f !== field)
-      : [...profile.fields, field].slice(0, 3);
-    update({ fields });
+  const toggleField = (f: Field) => {
+    const cur = profile.fields;
+    const next = cur.includes(f) ? cur.filter((x) => x !== f) : [...cur.filter((x) => x !== 'undecided'), f].slice(0, 3);
+    setProfile({ fields: (next.length ? next : ['undecided']) as Field[] });
+  };
+  const toggleExam = (e: string) => setExams((p) => (p.includes(e) ? p.filter((x) => x !== e) : [...p, e]));
+  const toggleCountry = (c: Country) => {
+    const cur = profile.abroadCountries ?? [];
+    setProfile({ abroadCountries: cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c] });
   };
 
-  const toggleExam = (exam: ExamKind) => {
-    const exams = { ...profile.exams };
-    if (exams[exam]) {
-      delete exams[exam];
-    } else {
-      exams[exam] = { status: "not_taken" };
+  const finish = () => {
+    const patch: Partial<typeof profile> = {};
+    if (showKzExams(profile.route)) {
+      if (exams.includes('ent')) patch.ent = { status: 'taken', score: Number(entScore) || null, profile: 'math-info' };
+      else patch.ent = { status: 'not_taken', score: null, profile: null };
+      if (exams.includes('ielts')) patch.ielts = { status: 'taken', score: Number(ieltsScore) || null };
+      if (exams.includes('sat')) patch.sat = { status: 'taken', score: Number(satScore) || null };
+      if (exams.includes('none')) {
+        patch.ent = { status: 'not_taken', score: null, profile: null };
+        patch.ielts = { status: 'not_taken', score: null };
+        patch.sat = { status: 'not_taken', score: null };
+      }
     }
-    update({ exams });
+    setProfile(patch);
+    router.push('/diagnosis');
   };
 
-  const setExamStatus = (exam: ExamKind, status: EntStatus) => {
-    const exams = { ...profile.exams };
-    if (exams[exam]) {
-      exams[exam] = { ...exams[exam], status };
-    }
-    update({ exams });
-  };
-
-  const setExamScore = (exam: ExamKind, score: number) => {
-    const exams = { ...profile.exams };
-    if (exams[exam]) {
-      exams[exam] = { ...exams[exam], score };
-    }
-    update({ exams });
-  };
-
-  const handleSubmit = () => {
-    sessionStorage.setItem("locus:profile", JSON.stringify(profile));
-    router.push("/recommendations");
-  };
-
-  const canNext = () => {
-    switch (step) {
-      case 0:
-        return true;
-      case 1:
-        return true;
-      case 2:
-        return profile.fields.length > 0;
-      case 3:
-        return true;
-      case 4:
-        return true;
-      default:
-        return false;
-    }
-  };
+  const steps = ['Маршрут', 'Класс', 'Направление', 'Финансирование', showAbroad(profile.route) ? 'Страны' : 'Экзамены'];
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
-            {STEPS[step]}
-          </h1>
-        </div>
-        <span className="border-2 border-ink bg-mint px-2 py-0.5 font-display text-xs font-extrabold shadow-brutal-xs">
-          {step + 1} / {STEPS.length}
-        </span>
-      </div>
+    <main className="flex flex-col gap-4">
+      <PathIndicator step={2} label={`Анкета · ${steps[step]}`} />
+      <div className="flex gap-1">{steps.map((s, i) => (
+        <div key={s} className={`h-1.5 flex-1 ${i <= step ? 'bg-mint' : 'bg-paper border border-ink'}`} />
+      ))}</div>
 
-      <Progress value={(step + 1) / STEPS.length} />
-
-      <Card>
-        <div className="flex flex-col gap-5">
-          {step === 0 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-medium text-smoke">Где хочешь учиться?</p>
-              <div className="flex flex-wrap gap-2">
-                {(["kz", "abroad", "undecided"] as Route[]).map((r) => (
-                  <Chip
-                    key={r}
-                    variant={profile.route === r ? "selected" : "default"}
-                    onClick={() => update({ route: r })}
-                  >
-                    {r === "kz" ? "Казахстан" : r === "abroad" ? "Зарубеж" : "Пока не знаю"}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 1 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-medium text-smoke">В каком ты классе?</p>
-              <div className="flex flex-wrap gap-2">
-                {(["9", "10", "11", "graduate"] as Grade[]).map((g) => (
-                  <Chip
-                    key={g}
-                    variant={profile.grade === g ? "selected" : "default"}
-                    onClick={() => update({ grade: g })}
-                  >
-                    {g === "graduate" ? "Выпускник" : `${g} класс`}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-medium text-smoke">
-                Какие направления интересны? (до 3)
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {FIELDS_OPTIONS.map((f) => (
-                  <Chip
-                    key={f.value}
-                    variant={profile.fields.includes(f.value) ? "selected" : "default"}
-                    onClick={() => toggleField(f.value)}
-                  >
-                    {f.label}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-medium text-smoke">Как оплатишь учёбу?</p>
-              <div className="flex flex-col gap-2">
-                {([
-                  { value: "grant_only", label: "Только грант" },
-                  { value: "grant_or_contract", label: "Грант или контракт" },
-                  { value: "contract_ok", label: "Только контракт" },
-                ] as { value: Funding; label: string }[]).map((o) => (
-                  <Chip
-                    key={o.value}
-                    variant={profile.funding === o.value ? "selected" : "default"}
-                    onClick={() => update({ funding: o.value })}
-                  >
-                    {o.label}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="flex flex-col gap-4">
-              <p className="text-sm font-medium text-smoke">
-                Какие экзамены сдал/сдаёшь?
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {(["ent", "ielts", "toefl", "sat", "act", "nuet"] as ExamKind[]).map((e) => (
-                  <Chip
-                    key={e}
-                    variant={profile.exams[e] ? "selected" : "default"}
-                    onClick={() => toggleExam(e)}
-                  >
-                    {e.toUpperCase()}
-                  </Chip>
-                ))}
-              </div>
-
-              {profile.exams.ent && (
-                <div className="flex flex-col gap-3 border-t-2 border-ink/10 pt-4">
-                  <p className="text-xs font-bold uppercase text-smoke">ЕНТ</p>
-                  <div className="flex gap-2">
-                    {(["taken", "trial", "not_taken"] as EntStatus[]).map((s) => (
-                      <Chip
-                        key={s}
-                        variant={profile.exams.ent?.status === s ? "selected" : "default"}
-                        onClick={() => setExamStatus("ent", s)}
-                      >
-                        {s === "taken" ? "Сдал" : s === "trial" ? "Пробный" : "Не сдавал"}
-                      </Chip>
-                    ))}
-                  </div>
-                  {profile.exams.ent.status !== "not_taken" && (
-                    <Input
-                      type="number"
-                      label="Балл ЕНТ"
-                      min={0}
-                      max={140}
-                      value={String(profile.exams.ent.score ?? "")}
-                      onChange={(e) => setExamScore("ent", Number(e.target.value) || 0)}
-                    />
-                  )}
-                </div>
-              )}
-
-              {(profile.exams.ielts || profile.exams.toefl) && (
-                <div className="flex flex-col gap-3 border-t-2 border-ink/10 pt-4">
-                  <p className="text-xs font-bold uppercase text-smoke">IELTS / TOEFL</p>
-                  <div className="flex gap-2">
-                    {(["taken", "trial", "not_taken"] as EntStatus[]).map((s) => (
-                      <Chip
-                        key={s}
-                        variant={
-                          (profile.exams.ielts?.status ?? profile.exams.toefl?.status) === s
-                            ? "selected"
-                            : "default"
-                        }
-                        onClick={() => {
-                          if (profile.exams.ielts) setExamStatus("ielts", s);
-                          if (profile.exams.toefl) setExamStatus("toefl", s);
-                        }}
-                      >
-                        {s === "taken" ? "Сдал" : s === "trial" ? "Пробный" : "Не сдавал"}
-                      </Chip>
-                    ))}
-                  </div>
-                  {(profile.exams.ielts?.status !== "not_taken" ||
-                    profile.exams.toefl?.status !== "not_taken") && (
-                    <Input
-                      type="number"
-                      label="Overall балл"
-                      min={0}
-                      max={9}
-                      step={0.5}
-                      value={String(
-                        profile.exams.ielts?.score ?? profile.exams.toefl?.score ?? ""
-                      )}
-                      onChange={(e) => {
-                        const val = Number(e.target.value) || 0;
-                        if (profile.exams.ielts) setExamScore("ielts", val);
-                        if (profile.exams.toefl) setExamScore("toefl", val);
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-
-              <label className="flex cursor-pointer items-center gap-3 border-2 border-ink bg-paper px-4 py-3 text-sm font-bold has-checked:bg-mint-soft">
-                <input
-                  type="checkbox"
-                  className="h-5 w-5 accent-ink"
-                  checked={profile.interestedInNu}
-                  onChange={(e) => update({ interestedInNu: e.target.checked })}
-                />
-                Интересует NU
-              </label>
-            </div>
-          )}
-
-          <div className="mt-2 flex items-center justify-between gap-3 border-t-2 border-ink/10 pt-5">
-            <Button
-              variant="ghost"
-              onClick={() => setStep((s) => Math.max(0, s - 1))}
-              disabled={step === 0}
-            >
-              ← Назад
-            </Button>
-            {step === STEPS.length - 1 ? (
-              <Button onClick={handleSubmit}>Показать результаты</Button>
-            ) : (
-              <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext()}>
-                Далее →
-              </Button>
-            )}
+      {step === 0 && (
+        <Card><h2 className="font-display font-extrabold uppercase">C1 · Где учиться?</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {([['kz', '🇰🇿 Казахстан'], ['abroad', '🌍 Зарубеж'], ['undecided', '🤔 Пока не знаю (начнём с КЗ)']] as [Route, string][]).map(([v, l]) => (
+              <Chip key={v} active={profile.route === v} onClick={() => setProfile({ route: v })}>{l}</Chip>
+            ))}
           </div>
-        </div>
-      </Card>
+        </Card>
+      )}
+      {step === 1 && (
+        <Card><h2 className="font-display font-extrabold uppercase">C2 · Класс?</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {([[9, '9 класс'], [10, '10 класс'], [11, '11 класс'], ['graduate', 'Выпускник']] as [Grade, string][]).map(([v, l]) => (
+              <Chip key={String(v)} active={profile.grade === v} onClick={() => setProfile({ grade: v })}>{l}</Chip>
+            ))}
+          </div>
+          {profile.grade === 11 && <p className="mt-2 text-xs text-smoke">11 класс, сен–апр: режим подготовки. Конкурс гранта скрыт до мая 2027.</p>}
+        </Card>
+      )}
+      {step === 2 && (
+        <Card><h2 className="font-display font-extrabold uppercase">C3 · Направления (до 3)</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {FIELDS.map((f) => <Chip key={f.k} active={profile.fields.includes(f.k)} onClick={() => toggleField(f.k)}>{f.label}</Chip>)}
+          </div>
+        </Card>
+      )}
+      {step === 3 && (
+        <Card><h2 className="font-display font-extrabold uppercase">C4 · Финансирование?</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {([['grant_only', '🏆 Только грант'], ['grant_or_contract', '🔄 Грант или контракт'], ['contract_ok', '💳 Только контракт']] as [Funding, string][]).map(([v, l]) => (
+              <Chip key={v} active={profile.funding === v} onClick={() => setProfile({ funding: v })}>{l}</Chip>
+            ))}
+          </div>
+        </Card>
+      )}
+      {step === 4 && showAbroad(profile.route) && (
+        <Card><h2 className="font-display font-extrabold uppercase">A1 · Страны (обязательно)</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {COUNTRIES.map((c) => <Chip key={c.k} active={(profile.abroadCountries ?? []).includes(c.k)} onClick={() => toggleCountry(c.k)}>{c.label}</Chip>)}
+          </div>
+          <div className="mt-3"><Input label="Бюджет $/год (A6)" type="number" value={profile.budgetUsd ?? ''} onChange={(e) => setProfile({ budgetUsd: e.target.value ? Number(e.target.value) : null })} placeholder="5000" /></div>
+        </Card>
+      )}
+      {step === 4 && showKzExams(profile.route) && (
+        <Card><h2 className="font-display font-extrabold uppercase">E1 · Какие экзамены?</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {[['ent', 'ЕНТ'], ['ielts', 'IELTS'], ['sat', 'SAT'], ['nuet', 'NUET'], ['nis', 'НИШ'], ['none', 'Пока никаких']].map(([v, l]) => (
+              <Chip key={v} active={exams.includes(v)} onClick={() => toggleExam(v)}>{l}</Chip>
+            ))}
+          </div>
+          {exams.includes('ent') && <div className="mt-3"><Input label="E2 · ЕНТ балл" type="number" value={entScore} onChange={(e) => setEntScore(e.target.value)} /></div>}
+          {exams.includes('ielts') && <div className="mt-3"><Input label="E3 · IELTS overall" type="number" value={ieltsScore} onChange={(e) => setIeltsScore(e.target.value)} /></div>}
+          {exams.includes('sat') && <div className="mt-3"><Input label="E4 · SAT" type="number" value={satScore} onChange={(e) => setSatScore(e.target.value)} /></div>}
+          <div className="mt-3 flex gap-2 items-center text-sm font-bold">
+            <span>Интересует NU?</span>
+            <Chip active={!!profile.interestedInNu} onClick={() => setProfile({ interestedInNu: !profile.interestedInNu })}>{profile.interestedInNu ? 'ДА' : 'НЕТ'}</Chip>
+          </div>
+          {profile.interestedInNu && <div className="mt-3"><Input label="K11 · GPA аттестата (из 5.0)" type="number" value={profile.gpa ?? ''} onChange={(e) => setProfile({ gpa: e.target.value ? Number(e.target.value) : null })} placeholder="4.7" /></div>}
+        </Card>
+      )}
+
+      <div className="flex gap-2">
+        {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)}>← Назад</Button>}
+        {step < 4 ? <Button onClick={() => setStep(step + 1)}>Далее →</Button> : <Button onClick={finish}>К диагностике →</Button>}
+      </div>
+      <button className="text-xs font-bold uppercase text-smoke" onClick={() => (step < 4 ? setStep(step + 1) : finish())}>Пропустить →</button>
     </main>
   );
 }

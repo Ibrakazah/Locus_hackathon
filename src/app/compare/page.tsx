@@ -1,213 +1,87 @@
-"use client";
+'use client';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import Link from 'next/link';
+import { Badge, Button, Card, PathIndicator } from '@/components/ui';
+import { useAppStore, useHydrated } from '@/lib/store';
+import { CATALOG, getProgram, getUniversity } from '@/data/catalog';
+import { recommend } from '@/lib/engine';
 
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { Suspense } from "react";
-import { Button, Card, Badge } from "@/components/ui";
-
-interface CompareItem {
-  id: string;
-  name: string;
-  city: string;
-  program: string;
-  language: string;
-  tuitionPerYear: string;
-  grantAvailable: boolean;
-  deadline: string;
-  admissionFit: "fits" | "close" | "fails";
-  reasons: string[];
+function rowsFor(ids: string[]): { label: string; vals: string[] }[] {
+  const ps = ids.map((id) => getProgram(id)!);
+  const get = (i: number) => ps[i];
+  const rows: { label: string; vals: string[] }[] = [
+    { label: 'Город', vals: ps.map((p) => p.city) },
+    { label: 'Язык', vals: ps.map((p) => p.language) },
+    { label: 'Стоимость/год', vals: ps.map((p) => `${p.tuitionPerYear.toLocaleString('ru-RU')} ${p.currency}`) },
+    { label: 'Грант', vals: ps.map((p) => p.grantPassScore ? `от ${p.grantPassScore.score} (${p.grantPassScore.year})` : 'проходные — проверить') },
+    { label: 'Дедлайн', vals: ps.map((p) => p.closesAt?.slice(0, 10) ?? '—') },
+  ];
+  // условные строки по треку
+  if (ps.some((p) => p.track === 'ent')) rows.push({ label: 'ЕНТ мин.', vals: ps.map((p) => p.admission.entMin ? String(p.admission.entMin) : '—') });
+  if (ps.some((p) => p.track === 'sat')) rows.push({ label: 'SAT мин.', vals: ps.map((p) => p.admission.satMin ? String(p.admission.satMin) : p.reach ? 'обязателен, порога нет' : '—') });
+  if (ps.some((p) => p.track === 'ielts_gpa' || p.track === 'nufyp')) rows.push({ label: 'IELTS мин.', vals: ps.map((p) => p.admission.ieltsMin ? `${p.admission.ieltsMin.overall} (${p.admission.ieltsMin.kind})` : '—') });
+  void get;
+  return rows;
 }
 
-const MOCK_COMPARE: Record<string, CompareItem> = {
-  "nu-ielts": {
-    id: "nu-ielts",
-    name: "Nazarbayev University",
-    city: "Астана",
-    program: "Computer Science",
-    language: "Английский",
-    tuitionPerYear: "$15,000",
-    grantAvailable: false,
-    deadline: "17 августа 2026",
-    admissionFit: "fits",
-    reasons: ["IELTS 6.5 закрывает порог 6.0", "GPA 4.7/5.0 > минимума 4.0"],
-  },
-  "kbtu-it": {
-    id: "kbtu-it",
-    name: "KBTU",
-    city: "Алматы",
-    program: "Информационные технологии",
-    language: "Английский",
-    tuitionPerYear: "~2,500,000 ₸",
-    grantAvailable: true,
-    deadline: "август 2026",
-    admissionFit: "close",
-    reasons: ["Топ-технический вуз", "Есть грант"],
-  },
-  "kimep-business": {
-    id: "kimep-business",
-    name: "KIMEP University",
-    city: "Алматы",
-    program: "Business Administration",
-    language: "Английский",
-    tuitionPerYear: "~3,000,000 ₸",
-    grantAvailable: true,
-    deadline: "август 2026",
-    admissionFit: "fits",
-    reasons: ["Международный стандарт", "Сильные связи с бизнесом"],
-  },
-  "sdu-cs": {
-    id: "sdu-cs",
-    name: "SDU",
-    city: "Алматы",
-    program: "Computer Science",
-    language: "Русский/Английский",
-    tuitionPerYear: "~1,500,000 ₸",
-    grantAvailable: true,
-    deadline: "август 2026",
-    admissionFit: "fits",
-    reasons: ["Современная программа", "Доступная стоимость"],
-  },
-  "astana-it": {
-    id: "astana-it",
-    name: "Astana IT University",
-    city: "Астана",
-    program: "Software Engineering",
-    language: "Английский",
-    tuitionPerYear: "~2,000,000 ₸",
-    grantAvailable: true,
-    deadline: "август 2026",
-    admissionFit: "fits",
-    reasons: ["Узкая специализация IT", "Партнёрства с компаниями"],
-  },
-};
+function CompareInner() {
+  const hydrated = useHydrated();
+  const params = useSearchParams();
+  const router = useRouter();
+  const profile = useAppStore((s) => s.profile);
+  const setGoal = useAppStore((s) => s.setGoal);
+  if (!hydrated) return <p>Загрузка…</p>;
+  const recs = recommend(profile, CATALOG, new Date());
+  const a = params.get('a') ?? recs[0]?.programId;
+  const b = params.get('b') ?? recs[1]?.programId;
+  if (!a || !b) return <p>Нет программ для сравнения</p>;
+  const pa = getProgram(a)!;
+  const ua = getUniversity(pa.universityId)!;
+  const rows = rowsFor([a, b]);
+  const ra = recs.find((r) => r.programId === a);
+  const rb = recs.find((r) => r.programId === b);
 
-const FIT_TONE: Record<string, "emerald" | "amber" | "red"> = {
-  fits: "emerald",
-  close: "amber",
-  fails: "red",
-};
-
-const FIT_LABEL: Record<string, string> = {
-  fits: "Проходишь порог",
-  close: "Близко",
-  fails: "Не проходишь",
-};
-
-function CompareContent() {
-  const searchParams = useSearchParams();
-  const ids = searchParams.get("ids")?.split(",") ?? [];
-  const items = ids.map((id) => MOCK_COMPARE[id]).filter(Boolean);
-
-  if (items.length < 2) {
-    return (
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
-        <Card>
-          <p className="text-sm font-medium text-smoke">
-            Выбери минимум 2 программы для сравнения на странице рекомендаций.
-          </p>
-          <div className="mt-4">
-            <Link href="/recommendations">
-              <Button>К рекомендациям</Button>
-            </Link>
-          </div>
-        </Card>
-      </main>
-    );
-  }
-
-  const rows = [
-    { label: "Город", get: (i: CompareItem) => i.city },
-    { label: "Язык", get: (i: CompareItem) => i.language },
-    { label: "Стоимость/год", get: (i: CompareItem) => i.tuitionPerYear },
-    { label: "Грант", get: (i: CompareItem) => (i.grantAvailable ? "Есть" : "Нет") },
-    { label: "Дедлайн", get: (i: CompareItem) => i.deadline },
-    { label: "Уровень допуска", get: (i: CompareItem) => FIT_LABEL[i.admissionFit] },
-  ];
+  const choose = (id: string) => { setGoal(id); router.push('/roadmap'); };
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
-          Сравнение
-        </h1>
-      </header>
-
-      <div className="overflow-x-auto">
-        <table className="w-full border-[3px] border-ink">
-          <thead>
-            <tr className="border-b-[3px] border-ink bg-ink text-cream">
-              <th className="p-3 text-left font-display text-xs font-extrabold uppercase">
-                Параметр
-              </th>
-              {items.map((item) => (
-                <th
-                  key={item.id}
-                  className="border-l-[3px] border-ink p-3 text-left font-display text-xs font-extrabold uppercase"
-                >
-                  {item.name}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.label} className="border-b-2 border-ink/20">
-                <td className="p-3 font-display text-xs font-bold uppercase text-smoke">
-                  {row.label}
-                </td>
-                {items.map((item) => (
-                  <td
-                    key={item.id}
-                    className="border-l-[3px] border-ink/20 p-3 text-sm font-medium"
-                  >
-                    {row.get(item)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-            <tr className="border-b-2 border-ink/20">
-              <td className="p-3 font-display text-xs font-bold uppercase text-smoke">
-                Причины
-              </td>
-              {items.map((item) => (
-                <td
-                  key={item.id}
-                  className="border-l-[3px] border-ink/20 p-3"
-                >
-                  <ul className="list-inside list-disc text-xs font-medium text-smoke">
-                    {item.reasons.map((r) => (
-                      <li key={r}>{r}</li>
-                    ))}
-                  </ul>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+    <main className="flex flex-col gap-4">
+      <PathIndicator step={5} label="Сравнение" />
+      <div className="grid grid-cols-2 gap-2">
+        {[pa, getProgram(b)!].map((p) => {
+          const u = getUniversity(p.universityId)!;
+          return (
+            <Card key={p.id}>
+              <p className="font-display text-sm font-extrabold">{u.name}</p>
+              <p className="text-xs text-smoke">{p.title}</p>
+            </Card>
+          );
+        })}
       </div>
-
-      <div className="flex justify-between pt-4">
-        <Link href="/recommendations">
-          <Button variant="outline">← К рекомендациям</Button>
-        </Link>
-        <Link href="/roadmap">
-          <Button>Сделать целью →</Button>
-        </Link>
+      <div className="flex gap-2">
+        {ra && <Badge kind={ra.matchLevel} />}
+        {rb && <Badge kind={rb.matchLevel} />}
       </div>
+      <Card>
+        {rows.map((r) => (
+          <div key={r.label} className="border-b border-ink/10 py-2 last:border-0">
+            <p className="font-display text-[11px] font-bold uppercase text-smoke">{r.label}</p>
+            <div className="grid grid-cols-2 gap-2 text-sm font-medium">
+              <span>{r.vals[0]}</span><span>{r.vals[1]}</span>
+            </div>
+          </div>
+        ))}
+      </Card>
+      <p className="text-xs text-smoke">Порядок строк — по приоритету «{profile.priority}». На мобиле две колонки ~170px.</p>
+      <div className="flex flex-col gap-2">
+        <Button onClick={() => choose(a)}>Сделать целью: {ua.name} →</Button>
+        <Button variant="ghost" onClick={() => choose(b)}>Сделать целью: {getUniversity(getProgram(b)!.universityId)!.name}</Button>
+      </div>
+      <Link href="/roadmap" className="text-center text-xs font-bold uppercase text-smoke">К плану без цели →</Link>
     </main>
   );
 }
 
 export default function ComparePage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
-          <p className="text-sm font-medium text-smoke">Загрузка...</p>
-        </main>
-      }
-    >
-      <CompareContent />
-    </Suspense>
-  );
+  return <Suspense fallback={<p>Загрузка…</p>}><CompareInner /></Suspense>;
 }
