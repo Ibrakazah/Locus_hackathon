@@ -1,5 +1,8 @@
 // Роль: FLOW
 // Описание шагов визарда. Чистая конфигурация — рендером занимается UI.
+// Порядок вопросов построен по правилам приёма в РК: сначала «кто ты»,
+// затем баллы ЕНТ + комбинация профильных предметов, направление,
+// финансирование (грант/платно/квота) и ограничения.
 
 export type StepKey =
   | "profile"
@@ -19,33 +22,33 @@ export interface StepConfig {
 export const STEPS: StepConfig[] = [
   {
     key: "profile",
-    title: "О себе",
+    title: "Кто ты",
     subtitle: "Класс, город и язык обучения",
-    requiredFields: ["city"],
+    requiredFields: ["city", "grade"],
   },
   {
     key: "scores",
     title: "Баллы ЕНТ",
-    subtitle: "Реальные или прогноз — честность важна",
-    requiredFields: [],
+    subtitle: "Сумма до 140 + комбинация профильных предметов",
+    requiredFields: ["entScores.combo"],
   },
   {
     key: "career",
-    title: "Направление",
-    subtitle: "Куда хочешь расти?",
-    requiredFields: [],
+    title: "Направление подготовки",
+    subtitle: "Группа образовательных программ под твои предметы",
+    requiredFields: ["careerField"],
   },
   {
     key: "budget",
-    title: "Бюджет и приоритеты",
-    subtitle: "Грант или контракт, что важнее всего",
-    requiredFields: [],
+    title: "Грант или платно",
+    subtitle: "Финансирование, квота и потолок оплаты",
+    requiredFields: ["studyBudget"],
   },
   {
     key: "constraints",
     title: "Ограничения",
     subtitle: "Регион, общежитие, военная кафедра",
-    requiredFields: [],
+    requiredFields: ["regionPref"],
   },
 ];
 
@@ -61,7 +64,7 @@ export const STEP_INDEX: Record<StepKey, number> = {
 export const STEP_FIELDS: Record<StepKey, string[]> = {
   profile: ["city", "grade", "language"],
   scores: ["entScores"],
-  career: ["careerField", "skills"],
-  budget: ["studyBudget", "priorities"],
+  career: ["careerField"],
+  budget: ["studyBudget", "quota", "paidBudget"],
   constraints: ["regionPref", "needsDorm", "needsMilitaryDept"],
 };

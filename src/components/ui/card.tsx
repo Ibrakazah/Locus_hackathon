@@ -1,5 +1,5 @@
 // Роль: UI
-// Карточка с вариантами отображения.
+// Карточка в neo-brutalist стиле референса: бордер 3px, жёсткая тень, квадратные углы.
 import type { ReactNode } from "react";
 
 export function Card({
@@ -11,7 +11,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 ${className}`}
+      className={`border-[3px] border-ink bg-paper p-5 shadow-brutal sm:p-6 ${className}`}
     >
       {children}
     </div>
@@ -19,15 +19,15 @@ export function Card({
 }
 
 export function CardHeader({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mb-4 flex items-center justify-between gap-3 ${className}`}>{children}</div>;
+  return <div className={`mb-4 flex items-start justify-between gap-3 ${className}`}>{children}</div>;
 }
 
 export function CardTitle({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <h3 className={`text-lg font-semibold tracking-tight ${className}`}>{children}</h3>;
+  return <h3 className={`font-display text-lg font-extrabold tracking-tight ${className}`}>{children}</h3>;
 }
 
 export function CardDescription({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-slate-500 dark:text-slate-400">{children}</p>;
+  return <p className="text-sm text-smoke">{children}</p>;
 }
 
 export function CardContent({ children, className = "" }: { children: ReactNode; className?: string }) {

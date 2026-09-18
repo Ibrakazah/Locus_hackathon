@@ -1,8 +1,9 @@
 // Роль: ENGINE
 // Диагностика профиля: 5 осей 0..100 + текстовый вывод "сильные/слабые стороны".
+// Оси построены на критериях приёма в РК (ЕНТ-2026, гранты, квоты).
 
 import type { ApplicantProfile, PriorityKey } from "./profile";
-import { entTotal } from "./profile";
+import { entTotal, entMinsOk, comboByKey, MAX_ENT } from "./profile";
 
 export type AxisKey = "academic" | "finance" | "location" | "career" | "campus";
 
@@ -21,55 +22,55 @@ export interface Diagnosis {
   summary: string;
 }
 
-const MAX_ENT = 140;
-
 export function diagnoseProfile(profile: ApplicantProfile): Diagnosis {
   const total = entTotal(profile.entScores);
+  const minsOk = entMinsOk(profile.entScores);
+  const combo = comboByKey(profile.entScores.combo);
+  const comboMatches = combo.fields.includes(profile.careerField);
 
   const academic = Math.round(Math.min(total / MAX_ENT, 1) * 100);
-  const finance =
-    profile.studyBudget === "grant"
-      ? 40
-      : profile.studyBudget === "contract"
-        ? 70
-        : 55;
+  const finance = financeScore(profile);
   const location = profile.regionPref === "any" ? 100 : 60;
-  const career = profile.skills.length > 0 ? Math.round(50 + profile.skills.length * 8) : 40;
+  const career = comboMatches ? 75 : 40;
   const campus = profile.needsDorm ? 45 : profile.needsMilitaryDept ? 40 : 55;
-  const champus = campus;
 
   const axes: AxisScore[] = [
     { key: "academic", value: academic, percentile: Math.round(academic * 0.9), label: "Академика" },
     { key: "finance", value: finance, percentile: finance, label: "Финансы" },
     { key: "location", value: location, percentile: location, label: "Локация" },
     { key: "career", value: career, percentile: Math.min(career + 10, 100), label: "Карьера" },
-    { key: "campus", value: champus, percentile: champus, label: "Кампус" },
+    { key: "campus", value: campus, percentile: campus, label: "Кампус" },
   ];
 
   const strengths: string[] = [];
   const weaknesses: string[] = [];
-  if (academic >= 70) strengths.push("Высокий общий балл ЕНТ — конкурентоспособен на грант в топ-вузах.");
-  else if (academic >= 40) weaknesses.push("Средний/низкий балл — грант в нац. вузах под вопросом.");
-  else weaknesses.push("Нет результатов ЕНТ — начни с диагностики по предметам.");
-  if (profile.skills.length >= 2) strengths.push("Богатый профиль активности — бонус к мотивационным письмам.");
-  if (profile.studyBudget === "grant")
-    weaknesses.push("Нужен грант — конкуренция выше, следи за баллами профильных предметов.");
-  if (profile.needsDorm && !strengths.includes("Хороший вариант с общежитием")) {
-    weaknesses.push("Проверь наличие и стоимость общежития в каждом вузе.");
-  }
+  if (academic >= 70) strengths.push("Высокий суммарный балл ЕНТ — конкурентоспособен на грант в топ-вузах.");
+  else if (academic >= 40) weaknesses.push("Средний/низкий балл — грант в нац. вузах под вопросом, смотри порог направления.");
+  else weaknesses.push("Нет заполненных баллов ЕНТ — начни с реальных или прогнозных результатов.");
+
+  if (total > 0 && !minsOk)
+    weaknesses.push("Не закрыт минимум по одному из предметов ЕНТ (5/5/5/3/3) — сертификат могут не допустить к конкурсу.");
+  if (!comboMatches)
+    weaknesses.push(`Комбинация «${combo.label}» не типична для направления «${careerName(profile.careerField)}» — проверь требования вуза.`);
+  if (profile.studyBudget === "grant" && profile.quota === "none")
+    weaknesses.push("Нужен грант без квоты — конкуренция максимальная, следи за баллами профильных предметов.");
+  if (profile.quota !== "none")
+    strengths.push("Есть право на квоту — конкурс по гранту идёт в отдельной категории, шансы выше.");
+  if (profile.needsDorm) weaknesses.push("Проверь наличие и стоимость общежития в каждом вузе.");
   if (strengths.length === 0) strengths.push("Профиль заполнен — движок уже может подбирать вузы.");
 
-  const summary = `Профиль: ${axisName(axes[0])} ${axes[0].value}/100 · ${
-    profile.careerField
-      ? `сфера «${careerName(profile.careerField)}»`
-      : "направление ещё не выбрано"
-  } · балл ЕНТ ~${total}/140`;
+  const summary = `Профиль: ${axes[0].label} ${axes[0].value}/100 · направление «${careerName(profile.careerField)}» · ЕНТ ~${total}/${MAX_ENT} · комбинация: ${combo.label}`;
 
   return { axes, strengths, weaknesses, summary };
 }
 
-function axisName(axis: AxisScore): string {
-  return axis.label;
+function financeScore(profile: ApplicantProfile): number {
+  if (profile.studyBudget === "contract") {
+    if (profile.paidBudget === null) return 65;
+    return profile.paidBudget >= 3000000 ? 80 : profile.paidBudget >= 1500000 ? 55 : 35;
+  }
+  if (profile.quota !== "none") return 70;
+  return 50;
 }
 
 export function careerName(field: ApplicantProfile["careerField"]): string {

@@ -46,11 +46,11 @@
     ],
     "deadlines": [
       {
-        "label": "Подача заявки (граждане РК)",
+        "label": "Подача заявки (бакалавриат)",
         "start": "2026-09-27",
         "end": "2027-07-24",
-        "source": "https://admissions.nu.edu.kz",
-        "notes": "Регистрационный взнос 10 000 ₸"
+        "source": "https://apply.nu.edu.kz/en/admissions",
+        "notes": "NUET: 130+/240 (мин. 60+60 по предметам); IELTS 6.0+ (writing 6.0); SAT от 1240. Взнос за NUET — 5 000 ₸"
       }
     ],
     "sourceUpdated": "2026-09-18"
@@ -72,7 +72,7 @@
     "admissionExams": ["ЕНТ"],
     "grantPlaces": 4800,
     "hasContract": true,
-    "tuitionRange": { "min": 1500000, "max": 2500000 },
+    "tuitionRange": { "min": 1100000, "max": 1700000 },
     "dormitory": true,
     "dormitoryCost": 25000,
     "library": true,
@@ -82,14 +82,13 @@
     "scienceIndex": 90,
     "programs": [
       {
-        "code": "6B061",
-        "name": "Информационные системы",
+        "code": "6B06110",
+        "name": "Программная инженерия (Software Engineering)",
         "group": "it",
         "profileSubjects": ["Информатика", "Математика"],
         "years": 4,
-        "grantMinScore": 103,
-        "paidMinScore": 65,
-        "tuitionPerYear": 1500000
+        "grantMinScore": 90,
+        "paidMinScore": 90
       },
       {
         "code": "6B031",
@@ -98,8 +97,17 @@
         "profileSubjects": ["История", "География"],
         "years": 4,
         "grantMinScore": 105,
-        "paidMinScore": 65,
-        "tuitionPerYear": 1500000
+        "paidMinScore": 90,
+        "tuitionPerYear": 1100000
+      },
+      {
+        "code": "6B04201",
+        "name": "Юриспруденция",
+        "group": "business",
+        "profileSubjects": ["История", "Право"],
+        "years": 4,
+        "paidMinScore": 75,
+        "tuitionPerYear": 1700000
       }
     ],
     "deadlines": [
@@ -107,7 +115,7 @@
         "label": "Приём документов (бакалавриат)",
         "start": "2026-06-20",
         "end": "2026-08-25",
-        "source": "https://www.kaznu.kz"
+        "source": "https://welcome.kaznu.kz"
       },
       {
         "label": "Конкурс грантов",
@@ -132,10 +140,10 @@
     "rating": 80,
     "accreditation": true,
     "minEntScore": 65,
-    "admissionExams": ["ЕНТ"],
+    "admissionExams": ["ЕНТ", "AET (внутренний экзамен)"],
     "grantPlaces": 2500,
     "hasContract": true,
-    "tuitionRange": { "min": 1300000, "max": 1900000 },
+    "tuitionRange": { "min": 2500000, "max": 2500000 },
     "dormitory": true,
     "dormitoryCost": 20000,
     "library": true,
@@ -145,32 +153,52 @@
     "scienceIndex": 55,
     "programs": [
       {
-        "code": "6B061",
-        "name": "Информационные системы",
+        "code": "6B06102",
+        "name": "Программная инженерия (Software Engineering)",
         "group": "it",
         "profileSubjects": ["Информатика", "Математика"],
         "years": 4,
-        "grantMinScore": 98,
+        "grantMinScore": 80,
         "paidMinScore": 65,
-        "tuitionPerYear": 1300000
+        "tuitionPerYear": 2500000
       },
       {
-        "code": "6B063",
-        "name": "Кибербезопасность",
+        "code": "6B06101",
+        "name": "Компьютерные науки (Computer Science)",
         "group": "it",
-        "profileSubjects": ["Физика", "Математика"],
+        "profileSubjects": ["Информатика", "Математика"],
         "years": 4,
-        "grantMinScore": 102,
+        "grantMinScore": 80,
         "paidMinScore": 65,
-        "tuitionPerYear": 1300000
+        "tuitionPerYear": 2500000
+      },
+      {
+        "code": "6B06103",
+        "name": "Анализ больших данных (Big Data Analysis)",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 80,
+        "paidMinScore": 65,
+        "tuitionPerYear": 2500000
+      },
+      {
+        "code": "6B06301",
+        "name": "Кибербезопасность (Cybersecurity)",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "paidMinScore": 65,
+        "tuitionPerYear": 2500000
       }
     ],
     "deadlines": [
       {
         "label": "Приём документов (бакалавриат)",
         "start": "2026-06-20",
-        "end": "2026-08-25",
-        "source": "https://aitu.edu.kz"
+        "end": "2026-08-24",
+        "source": "https://astanait.edu.kz/ru/bachelor",
+        "notes": "Приёмная комиссия работает до 24 августа включительно"
       },
       {
         "label": "Конкурс грантов",
@@ -194,11 +222,11 @@
     "foundingYear": 2001,
     "rating": 82,
     "accreditation": true,
-    "minEntScore": 65,
+    "minEntScore": 50,
     "admissionExams": ["ЕНТ"],
     "grantPlaces": 900,
     "hasContract": true,
-    "tuitionRange": { "min": 1900000, "max": 2800000 },
+    "tuitionRange": { "min": 2100000, "max": 3000000 },
     "dormitory": true,
     "dormitoryCost": 35000,
     "library": true,
@@ -208,38 +236,53 @@
     "scienceIndex": 62,
     "programs": [
       {
-        "code": "6B061",
-        "name": "Программная инженерия",
+        "code": "6B06110",
+        "name": "Наука о данных и искусственный интеллект",
         "group": "it",
         "profileSubjects": ["Информатика", "Математика"],
         "years": 4,
-        "grantMinScore": 104,
-        "paidMinScore": 75,
-        "tuitionPerYear": 1900000
+        "grantMinScore": 110,
+        "paidMinScore": 50
       },
       {
-        "code": "6B071",
-        "name": "Нефтегазовое дело",
+        "code": "6B06107",
+        "name": "Разработка игр",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 110,
+        "paidMinScore": 50
+      },
+      {
+        "code": "6B07103",
+        "name": "Автоматизация и управление",
         "group": "engineering",
         "profileSubjects": ["Физика", "Математика"],
         "years": 4,
-        "grantMinScore": 96,
-        "paidMinScore": 70,
-        "tuitionPerYear": 1900000
+        "grantMinScore": 110,
+        "paidMinScore": 50
       }
     ],
     "deadlines": [
       {
-        "label": "Приём документов (бакалавриат)",
+        "label": "Приём документов и заключение договора (платное)",
         "start": "2026-06-20",
         "end": "2026-08-25",
-        "source": "https://kbtu.edu.kz"
+        "source": "https://kbtu.edu.kz/ru/priemnaya-komissiya-bakalavriat"
       },
       {
-        "label": "Конкурс грантов",
+        "label": "Подача заявления на конкурс госгрантов",
         "start": "2026-07-13",
         "end": "2026-07-20",
-        "source": "https://egov.kz"
+        "source": "https://kbtu.edu.kz/ru/priemnaya-komissiya-bakalavriat",
+        "notes": "Результаты конкурса — до 10 августа, зачисление — 25 августа"
+      },
+      {
+        "label": "Заселение в общежитие KBTU JASTAR CITY",
+        "start": "2026-07-01",
+        "end": "2026-08-19",
+        "source": "https://kbtu.edu.kz/ru/priemnaya-komissiya-bakalavriat",
+        "notes": "Заявки на заселение — 1–6 июля, заселение — 19 августа. Разовый студенческий взнос — 40 000 ₸"
       }
     ],
     "sourceUpdated": "2026-09-18"
@@ -261,7 +304,7 @@
     "admissionExams": ["ЕНТ"],
     "grantPlaces": 4200,
     "hasContract": true,
-    "tuitionRange": { "min": 1300000, "max": 2000000 },
+    "tuitionRange": { "min": 1350000, "max": 1600000 },
     "dormitory": true,
     "dormitoryCost": 22000,
     "library": true,
@@ -271,24 +314,64 @@
     "scienceIndex": 74,
     "programs": [
       {
-        "code": "6B042",
+        "code": "6B06103",
+        "name": "Информационные системы",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 110,
+        "paidMinScore": 110,
+        "tuitionPerYear": 1600000
+      },
+      {
+        "code": "6B06112",
+        "name": "Технологии искусственного интеллекта",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 110,
+        "paidMinScore": 110,
+        "tuitionPerYear": 1600000
+      },
+      {
+        "code": "6B06306",
+        "name": "Системы информационной безопасности",
+        "group": "it",
+        "profileSubjects": ["Информатика", "Математика"],
+        "years": 4,
+        "grantMinScore": 110,
+        "paidMinScore": 110,
+        "tuitionPerYear": 1600000
+      },
+      {
+        "code": "6B07102",
+        "name": "Автоматизация и управление",
+        "group": "engineering",
+        "profileSubjects": ["Физика", "Математика"],
+        "years": 4,
+        "grantMinScore": 100,
+        "paidMinScore": 100,
+        "tuitionPerYear": 1470000
+      },
+      {
+        "code": "6B04114",
+        "name": "Финансы",
+        "group": "business",
+        "profileSubjects": ["Математика", "География"],
+        "years": 4,
+        "grantMinScore": 115,
+        "paidMinScore": 115,
+        "tuitionPerYear": 1550000
+      },
+      {
+        "code": "6B04201",
         "name": "Юриспруденция",
         "group": "business",
         "profileSubjects": ["История", "Право"],
         "years": 4,
         "grantMinScore": 108,
-        "paidMinScore": 75,
-        "tuitionPerYear": 1400000
-      },
-      {
-        "code": "6B061",
-        "name": "Информационные системы",
-        "group": "it",
-        "profileSubjects": ["Информатика", "Математика"],
-        "years": 4,
-        "grantMinScore": 96,
-        "paidMinScore": 65,
-        "tuitionPerYear": 1300000
+        "paidMinScore": 100,
+        "tuitionPerYear": 1550000
       }
     ],
     "deadlines": [
@@ -296,7 +379,14 @@
         "label": "Приём документов (бакалавриат)",
         "start": "2026-06-20",
         "end": "2026-08-25",
-        "source": "https://enu.kz"
+        "source": "https://enu.kz/ru/page/applicants/bachelor"
+      },
+      {
+        "label": "Зачисление",
+        "start": "2026-08-10",
+        "end": "2026-08-25",
+        "source": "https://enu.kz/ru/page/applicants/bachelor",
+        "notes": "Приём заявлений на зачисление — с 10 по 25 августа"
       },
       {
         "label": "Конкурс грантов",
@@ -324,7 +414,7 @@
     "admissionExams": ["ЕНТ", "Специальный экзамен"],
     "grantPlaces": 1600,
     "hasContract": true,
-    "tuitionRange": { "min": 1800000, "max": 2500000 },
+    "tuitionRange": { "min": 905800, "max": 2100000 },
     "dormitory": true,
     "dormitoryCost": 25000,
     "library": true,
@@ -334,32 +424,31 @@
     "scienceIndex": 66,
     "programs": [
       {
-        "code": "6B101",
+        "code": "6B10107",
         "name": "Общая медицина",
         "group": "health",
         "profileSubjects": ["Биология", "Химия"],
         "years": 6,
-        "grantMinScore": 112,
-        "paidMinScore": 70,
-        "tuitionPerYear": 2000000
+        "grantMinScore": 124,
+        "paidMinScore": 80,
+        "tuitionPerYear": 1900000
       },
       {
-        "code": "6B10105",
+        "code": "6B10109",
         "name": "Стоматология",
         "group": "health",
         "profileSubjects": ["Биология", "Химия"],
         "years": 5,
-        "grantMinScore": 115,
-        "paidMinScore": 75,
-        "tuitionPerYear": 2400000
+        "paidMinScore": 90,
+        "tuitionPerYear": 2100000
       }
     ],
     "deadlines": [
       {
-        "label": "Приём документов (творческие/спец. экзамены)",
+        "label": "Приём документов (бакалавриат)",
         "start": "2026-06-20",
         "end": "2026-08-20",
-        "source": "https://kaznmu.kz"
+        "source": "https://kaznmu.edu.kz"
       },
       {
         "label": "Конкурс грантов",

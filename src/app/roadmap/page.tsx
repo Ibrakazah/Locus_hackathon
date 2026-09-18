@@ -43,10 +43,10 @@ export default function RoadmapPage() {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Roadmap поступления</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="font-display text-3xl font-black uppercase tracking-tight">Roadmap поступления</h1>
+        <p className="text-sm font-medium text-smoke">
           Настраивается под профиль. Дедлайны 2026–2027 проверяй в источниках.
         </p>
       </header>
@@ -63,62 +63,62 @@ export default function RoadmapPage() {
       </Card>
 
       {next && (
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-900 dark:bg-indigo-950">
-          <p className="text-xs font-medium uppercase tracking-wide text-indigo-500">
+        <div className="border-[3px] border-ink bg-mint p-5 shadow-brutal">
+          <p className="font-display text-xs font-black uppercase tracking-wide">
             Твой следующий шаг
           </p>
-          <p className="mt-1 text-lg font-semibold">
+          <p className="mt-1 font-display text-lg font-extrabold">
             {next.step.title}: {next.item}
           </p>
         </div>
       )}
 
-      <div className="relative flex flex-col gap-4 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-slate-200 dark:before:bg-slate-800">
+      <div className="relative flex flex-col gap-5 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-[3px] before:bg-ink">
         {roadmap.map((step) => (
-          <div key={step.id} className="relative pl-8">
+          <div key={step.id} className="relative pl-10">
             <span
-              className={`absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border-2 ${
+              className={`absolute left-0 top-1.5 h-6 w-6 border-[3px] border-ink ${
                 step.status === "done"
-                  ? "border-emerald-500 bg-emerald-500"
+                  ? "bg-mint"
                   : step.status === "active"
-                    ? "border-indigo-500 bg-indigo-500"
-                    : "border-slate-300 bg-white dark:bg-slate-900"
+                    ? "bg-sun"
+                    : "bg-paper"
               }`}
             />
             <Card>
               <CardHeader>
                 <div>
-                  <CardTitle className="flex items-center gap-2">
-                    {step.title}
-                    <span className="text-sm font-normal text-slate-400">{step.date}</span>
-                  </CardTitle>
+<CardTitle className="flex items-center gap-2">
+                      {step.title}
+                      <span className="font-display text-sm font-bold text-smoke">{step.date}</span>
+                    </CardTitle>
                 </div>
                 <Badge tone={STATUS_TONE[step.status]}>{STATUS_LABEL[step.status]}</Badge>
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
                 {step.checklist.map((item) => (
-                  <label
-                    key={item.label}
-                    className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-900"
-                  >
-                    <input
-                      type="checkbox"
-                      className="accent-indigo-600"
-                      checked={item.done}
-                      onChange={() => toggle(step.id, item.label)}
-                    />
-                    <span className={item.done ? "line-through opacity-50" : ""}>{item.label}</span>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="ml-auto text-xs text-indigo-500 hover:underline"
-                      >
-                        Открыть →
-                      </a>
-                    )}
-                  </label>
+<label
+                      key={item.label}
+                      className="flex cursor-pointer items-center gap-3 px-2 py-1.5 text-sm font-medium hover:bg-mint-soft"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-5 w-5 shrink-0 accent-ink"
+                        checked={item.done}
+                        onChange={() => toggle(step.id, item.label)}
+                      />
+                      <span className={item.done ? "line-through opacity-50" : ""}>{item.label}</span>
+                      {item.link && (
+                        <a
+                          href={item.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="ml-auto font-display text-xs font-extrabold uppercase text-mint-deep hover:underline"
+                        >
+                          Открыть →
+                        </a>
+                      )}
+                    </label>
                 ))}
               </CardContent>
             </Card>

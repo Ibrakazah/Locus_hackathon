@@ -3,74 +3,72 @@
 import { Badge } from "@/components/ui";
 import type { CareerField } from "@/lib/engine/profile";
 import { careerName } from "@/lib/engine/scoring";
+import { comboByKey } from "@/lib/engine/profile";
 import type { StepProps } from "./shared";
 
-const FIELDS: CareerField[] = [
-  "it",
-  "engineering",
-  "medicine",
-  "science",
-  "business",
-  "education",
-  "humanities",
-  "law",
-  "agriculture",
-  "creative",
+const FIELDS: { field: CareerField; hint: string }[] = [
+  { field: "it", hint: "Математика + Информатика" },
+  { field: "engineering", hint: "Математика + Физика / Химия" },
+  { field: "medicine", hint: "Биология + Химия" },
+  { field: "science", hint: "Математика + Физика / Химия + Биология" },
+  { field: "business", hint: "История + Право / Математика" },
+  { field: "education", hint: "Язык + Литература / Математика" },
+  { field: "humanities", hint: "Язык + Литература / История + География" },
+  { field: "law", hint: "Всемирная история + Основы права" },
+  { field: "agriculture", hint: "Биология + География / Химия" },
+  { field: "creative", hint: "Творческий экзамен (2 профильных)" },
 ];
 
 export function CareerStep({ state, dispatch }: StepProps) {
+  const combo = comboByKey(state.profile.entScores.combo);
+  const matchesCombo = combo.fields.includes(state.profile.careerField);
+
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <p className="mb-2 text-sm font-medium">Выбери направление</p>
+        <p className="mb-2 text-sm font-medium">Выбери направление подготовки</p>
         <div className="flex flex-wrap gap-2">
-          {FIELDS.map((f) => {
-            const active = state.profile.careerField === f;
+          {FIELDS.map(({ field, hint }) => {
+            const active = state.profile.careerField === field;
             return (
               <button
-                key={f}
+                key={field}
                 type="button"
-                onClick={() => dispatch({ type: "SET_FIELD", path: "careerField", value: f })}
-                className={`rounded-full border px-4 py-2 text-sm transition ${
+                title={hint}
+                onClick={() => dispatch({ type: "SET_FIELD", path: "careerField", value: field })}
+                className={`border-2 border-ink px-4 py-2 font-display text-sm font-bold transition-all ${
                   active
-                    ? "border-indigo-500 bg-indigo-50 font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
-                    : "border-slate-300 hover:bg-slate-50 dark:border-slate-700"
+                    ? "bg-mint shadow-brutal-xs"
+                    : "bg-paper hover:bg-mint-soft"
                 }`}
               >
-                {careerName(f)}
+                {careerName(field)}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-medium">Твои активности / навыки</p>
-        <input
-          className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900"
-          placeholder="Олимпиады, спорт, волонтёрство, курсы… (через запятую)"
-          value={state.profile.skills.join(", ")}
-          onChange={(e) =>
-            dispatch({
-              type: "SET_FIELD",
-              path: "skills",
-              value: e.target.value
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean),
-            })
-          }
-        />
-        {state.profile.skills.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {state.profile.skills.map((s) => (
-              <Badge key={s} tone="sky">
-                {s}
-              </Badge>
-            ))}
-          </div>
+      <div className="border-2 border-ink bg-cream px-4 py-3 text-sm font-medium shadow-brutal-xs">
+        <p className="font-display font-extrabold">Твоя комбинация ЕНТ: {combo.label}</p>
+        {matchesCombo ? (
+          <p className="mt-1 text-smoke">
+            Подходит для выбранного направления — конкурс по группе программ будет доступен.
+          </p>
+        ) : (
+          <p className="mt-1 font-bold">
+            Эта комбинация не типична для «{careerName(state.profile.careerField)}». Проверь
+            требования вуза: возможно, понадобится сменить комбинацию до регистрации на ЕНТ.
+          </p>
         )}
       </div>
+
+      {state.profile.careerField === "creative" && (
+        <div className="flex items-center gap-2 text-sm font-medium text-smoke">
+          <Badge tone="indigo">Творческий экзамен</Badge>
+          Участие — по результатам творческого экзамена в вузе (порог по экзамену ≥ 5).
+        </div>
+      )}
     </div>
   );
 }

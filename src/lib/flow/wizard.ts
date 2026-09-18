@@ -106,9 +106,9 @@ export function isStepComplete(state: WizardState, key: StepKey): boolean {
   const p = state.profile;
   switch (key) {
     case "profile":
-      return Boolean(p.city.trim()) && p.grade > 0;
+      return Boolean(p.city.trim());
     case "scores":
-      return Object.values(p.entScores).every((v) => typeof v !== "number" || v === 0 || true);
+      return entTotal(p.entScores) > 0;
     case "career":
       return p.careerField !== null;
     case "budget":

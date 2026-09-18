@@ -26,10 +26,10 @@ export function ConstraintsStep({ state, dispatch }: StepProps) {
               key={r.value}
               type="button"
               onClick={() => dispatch({ type: "SET_FIELD", path: "regionPref", value: r.value })}
-              className={`rounded-full border px-4 py-2 text-sm transition ${
+              className={`border-2 border-ink px-4 py-2 font-display text-sm font-bold transition-all ${
                 state.profile.regionPref === r.value
-                  ? "border-indigo-500 bg-indigo-50 font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
-                  : "border-slate-300 hover:bg-slate-50 dark:border-slate-700"
+                  ? "bg-mint shadow-brutal-xs"
+                  : "bg-paper hover:bg-mint-soft"
               }`}
             >
               {r.label}
@@ -38,19 +38,19 @@ export function ConstraintsStep({ state, dispatch }: StepProps) {
         </div>
       </div>
 
-      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 text-sm dark:border-slate-800">
+      <label className="flex cursor-pointer items-center gap-3 border-2 border-ink bg-paper px-4 py-3 text-sm font-bold has-checked:bg-mint-soft">
         <input
           type="checkbox"
-          className="accent-indigo-600"
+          className="h-5 w-5 accent-ink"
           checked={state.profile.needsDorm}
           onChange={toggleField("needsDorm")}
         />
         Нужно общежитие
       </label>
-      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 text-sm dark:border-slate-800">
+      <label className="flex cursor-pointer items-center gap-3 border-2 border-ink bg-paper px-4 py-3 text-sm font-bold has-checked:bg-mint-soft">
         <input
           type="checkbox"
-          className="accent-indigo-600"
+          className="h-5 w-5 accent-ink"
           checked={state.profile.needsMilitaryDept}
           onChange={toggleField("needsMilitaryDept")}
         />

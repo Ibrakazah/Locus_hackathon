@@ -3,7 +3,7 @@
 
 import type { University, Program, ProgramGroup } from "@/lib/data/types";
 import type { ApplicantProfile, CareerField, PriorityKey, RegionPref } from "./profile";
-import { entTotal } from "./profile";
+import { entTotal, entMinsOk, directionThreshold } from "./profile";
 import { priorityWeights } from "./scoring";
 
 export interface MatchResult {
@@ -48,6 +48,7 @@ export function matchUniversities(
   universities: University[],
 ): MatchResult[] {
   const total = entTotal(profile.entScores);
+  const minsOk = entMinsOk(profile.entScores);
   const weights = priorityWeights(profile);
   const results: MatchResult[] = [];
 
@@ -58,8 +59,14 @@ export function matchUniversities(
     if (!program) {
       blockers.push("Нет программы под выбранное направление");
     }
-    if (total < uni.minEntScore) {
-      blockers.push(`Нужен минимум ${uni.minEntScore} баллов (сейчас ~${total})`);
+    if (total > 0 && !minsOk) {
+      blockers.push("Не закрыт минимум по предметам ЕНТ (история/профильные ≥ 5, чтение/мат. грамотность ≥ 3)");
+    }
+    const directionMin = directionThreshold(profile.careerField);
+    const entryMin = Math.max(program?.grantMinScore ?? uni.minEntScore, directionMin);
+    if (total < entryMin) {
+      const why = directionMin > uni.minEntScore ? `выше порога направления ${directionMin}` : `порог вуза ${uni.minEntScore}`;
+      blockers.push(`Нужен минимум ${entryMin} баллов (${why}; сейчас ~${total})`);
     }
     if (profile.regionPref !== "any" && !regionMatches(profile.regionPref, uni.city)) {
       blockers.push(`Регион: ты ограничил(а) ${profile.regionPref}`);
@@ -69,6 +76,13 @@ export function matchUniversities(
     }
     if (program?.paidMinScore && profile.studyBudget === "contract" && total < program.paidMinScore) {
       blockers.push(`Платное: нужен минимум ${program.paidMinScore} баллов`);
+    }
+    const budgetCap = profile.paidBudget;
+    if (profile.studyBudget === "contract" && budgetCap && program) {
+      const realPrice = program.tuitionPerYear ?? (uni.tuitionRange.min + uni.tuitionRange.max) / 2;
+      if (realPrice > budgetCap) {
+        blockers.push(`Выше твоего бюджета: ~${Intl.NumberFormat("ru-RU").format(realPrice)} ₸/год`);
+      }
     }
 
     if (blockers.length > 0) {
@@ -95,7 +109,6 @@ export function matchUniversities(
     const cityScore = profile.regionPref === "any" ? 85 : regionMatches(profile.regionPref, uni.city) ? 100 : 40;
     const campusScore = (uni.dormitory ? 60 : 0) + (uni.sportFacilities ? 20 : 0) + (uni.library ? 20 : 0);
     const employmentScore = Math.round(uni.employmentRate6m * 100);
-    const isAffordableForGrant = profile.studyBudget === "grant";
 
     const weighted =
       weights.rating * uni.rating +
@@ -106,8 +119,8 @@ export function matchUniversities(
       weights.science * (uni.scienceIndex ?? 40);
 
     // Учесть реалистичность баллов
-    const threshold = program.grantMinScore ?? uni.minEntScore;
-    const margin = candidateScore - threshold;
+    const grantThreshold = Math.max(program.grantMinScore ?? uni.minEntScore, directionMin);
+    const margin = candidateScore - grantThreshold;
     const safetyBoost = margin >= 10 ? 8 : margin >= 0 ? 3 : -12;
 
     let score = Math.round(Math.min(weighted + safetyBoost, 100));
@@ -118,8 +131,10 @@ export function matchUniversities(
 
     const reasons: string[] = [];
     reasons.push(createReason("rating", profile, uni));
-    if (isAffordableForGrant && margin >= 0)
-      reasons.push(`Твой прогноз ${total} ${margin >= 0 ? "проходит" : "не дотягивает"} на грант (мин. ${threshold})`);
+    if (profile.quota !== "none") reasons.push("Есть право на квоту — конкурс гранта в отдельной группе");
+    if (profile.careerField === "creative") reasons.push("Приём по результатам творческого экзамена в вузе");
+    if (profile.studyBudget !== "contract" && margin >= 0)
+      reasons.push(`Твои баллы ~${total} проходят порог конкурса гранта (мин. ${grantThreshold})`);
     if (profile.needsDorm && uni.dormitory)
       reasons.push("Есть общежитие");
     if (uni.militaryDept && profile.needsMilitaryDept)

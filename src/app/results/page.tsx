@@ -34,30 +34,30 @@ export default function ResultsPage() {
   const hasData = entTotal(profile.entScores) > 0;
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12">
-      <header className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">Твой маршрут поступления</h1>
-          <div className="flex gap-2">
-          <Link href="/roadmap">
-            <Button size="sm" variant="outline">
-              Roadmap →
-            </Button>
-          </Link>
-          <Link href="/onboarding">
-            <Button variant="outline" size="sm">
-              Изменить анкету
-            </Button>
-          </Link>
+    <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 sm:px-6">
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="font-display text-3xl font-black uppercase tracking-tight">
+            Твой маршрут поступления
+          </h1>
+          <div className="flex gap-3">
+            <Link href="/roadmap">
+              <Button size="sm">Roadmap →</Button>
+            </Link>
+            <Link href="/onboarding">
+              <Button variant="secondary" size="sm">
+                Изменить анкету
+              </Button>
+            </Link>
+          </div>
         </div>
-        </div>
-        <p className="text-slate-500 dark:text-slate-400">{diagnosis.summary}</p>
+        <p className="border-l-4 border-mint pl-3 text-sm font-medium text-smoke">{diagnosis.summary}</p>
       </header>
 
       {!hasData && (
         <Card>
           <CardContent>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm font-medium text-smoke">
               Сначала заполни баллы ЕНТ в анкете — без них подбор невозможен.
             </p>
             <div className="mt-4">
@@ -72,13 +72,16 @@ export default function ResultsPage() {
       {hasData && (
         <>
           <section aria-label="Диагностика">
-            <div className="mb-3 grid grid-cols-2 gap-4 sm:grid-cols-5">
+            <h2 className="mb-3 font-display text-xl font-black uppercase tracking-tight">
+              Диагностика профиля
+            </h2>
+            <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
               {diagnosis.axes.map((axis) => (
-                <div key={axis.key} className="flex flex-col gap-1.5">
-                  <span className="text-xs font-medium text-slate-500">{axis.label}</span>
+                <div key={axis.key} className="flex flex-col gap-1.5 border-2 border-ink bg-paper p-3 shadow-brutal-xs">
+                  <span className="font-display text-[11px] font-extrabold uppercase text-smoke">{axis.label}</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold">{axis.value}</span>
-                    <span className="text-xs text-slate-400">/100</span>
+                    <span className="font-display text-xl font-black">{axis.value}</span>
+                    <span className="text-xs font-bold text-smoke">/100</span>
                   </div>
                   <Progress value={axis.value / 100} />
                 </div>
@@ -103,15 +106,22 @@ export default function ResultsPage() {
           </section>
 
           <section aria-label="Подбор вузов">
-            <h2 className="mb-3 text-xl font-semibold">Подходящие вузы</h2>
-            <div className="flex flex-col gap-4">
-              {matches.map((m) => (
-                <Card key={m.university.id} className={m.eligible ? "" : "opacity-70"}>
+            <h2 className="mb-3 font-display text-xl font-black uppercase tracking-tight">
+              Подходящие вузы
+            </h2>
+            <div className="flex flex-col gap-5">
+              {matches.map((m, i) => (
+                <Card key={m.university.id} className={m.eligible ? "" : "opacity-80"}>
                   <CardHeader>
                     <div>
-                      <CardTitle>{m.university.short} — {m.program.name}</CardTitle>
-                      <p className="text-sm text-slate-500">
-                        {m.university.name} · {m.university.city}
+                      <p className="font-display text-xs font-black text-mint-deep">
+                        #{i + 1} · {m.university.city}
+                      </p>
+                      <CardTitle>
+                        {m.university.short} — {m.program.name}
+                      </CardTitle>
+                      <p className="text-sm font-medium text-smoke">
+                        {m.university.name}
                       </p>
                     </div>
                     {m.eligible ? (
@@ -123,18 +133,18 @@ export default function ResultsPage() {
                   <CardContent className="flex flex-col gap-2">
                     {m.eligible ? (
                       <>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <Progress value={m.score / 100} className="flex-1" />
-                          <span className="text-sm font-bold">{m.score}%</span>
+                          <span className="font-display text-sm font-black">{m.score}%</span>
                         </div>
-                        <ul className="list-inside list-disc text-sm text-slate-600 dark:text-slate-300">
+                        <ul className="list-inside list-disc text-sm font-medium text-smoke">
                           {m.reasons.map((r) => (
                             <li key={r}>{r}</li>
                           ))}
                         </ul>
                       </>
                     ) : (
-                      <ul className="list-inside list-disc text-sm text-slate-600 dark:text-slate-300">
+                      <ul className="list-inside list-disc text-sm font-medium text-smoke">
                         {m.blockers.map((b) => (
                           <li key={b}>{b}</li>
                         ))}

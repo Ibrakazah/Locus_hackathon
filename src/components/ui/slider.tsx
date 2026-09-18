@@ -1,5 +1,5 @@
 // Роль: UI
-// Слайдер (range) и прогресс-бар.
+// Слайдер, прогресс-бар и бейдж в neo-brutalist стиле референса.
 "use client";
 
 import type { HTMLAttributes, ReactNode } from "react";
@@ -23,8 +23,8 @@ export function Slider({
     <div className="flex flex-col gap-1.5">
       {label && (
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">{label}</span>
-          <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+          <span className="text-sm font-bold">{label}</span>
+          <span className="border-2 border-ink bg-mint px-2 py-0.5 font-display text-xs font-extrabold shadow-brutal-xs">
             {value}
           </span>
         </div>
@@ -36,7 +36,7 @@ export function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-indigo-600 dark:bg-slate-700"
+        className="brutal-range h-6 w-full"
         aria-label={label ?? "slider"}
       />
     </div>
@@ -57,12 +57,9 @@ export function Progress({
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={`h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 ${className}`}
+      className={`h-4 w-full border-2 border-ink bg-paper ${className}`}
     >
-      <div
-        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all"
-        style={{ width: `${pct}%` }}
-      />
+      <div className="h-full bg-mint transition-all" style={{ width: `${pct}%` }} />
     </div>
   );
 }
@@ -78,16 +75,16 @@ export function Badge({
   className?: string;
 } & HTMLAttributes<HTMLSpanElement>) {
   const tones: Record<string, string> = {
-    slate: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
-    indigo: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300",
-    emerald: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
-    amber: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
-    red: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
-    sky: "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300",
+    slate: "bg-paper text-ink",
+    indigo: "bg-mint-soft text-ink",
+    emerald: "bg-mint text-ink",
+    amber: "bg-sun text-ink",
+    red: "bg-danger text-white",
+    sky: "bg-sky-soft text-ink",
   };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tones[tone]} ${className}`}
+      className={`inline-flex items-center border-2 border-ink px-2.5 py-0.5 font-display text-[11px] font-extrabold uppercase tracking-wide shadow-brutal-xs ${tones[tone]} ${className}`}
       {...props}
     >
       {children}

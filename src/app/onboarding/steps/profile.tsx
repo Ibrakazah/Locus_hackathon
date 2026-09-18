@@ -1,27 +1,25 @@
 "use client";
 
 import { Input, Select } from "@/components/ui";
+import { GRADE_LABELS } from "@/lib/engine/profile";
 import { getCities } from "@/lib/data";
+import type { Grade } from "@/lib/engine/profile";
 import type { StepProps } from "./shared";
-
-const GRADES = [
-  { value: "10", label: "10 класс" },
-  { value: "11", label: "11 класс (выпускной)" },
-  { value: "12", label: "12 класс / колледж" },
-];
 
 export function ProfileStep({ state, dispatch }: StepProps) {
   const cities = getCities();
+  const gradeKey = state.profile.grade as Grade;
+
   return (
     <div className="flex flex-col gap-4">
       <Select
         name="grade"
-        label="Класс"
-        value={String(state.profile.grade)}
+        label="Кто ты сейчас"
+        value={gradeKey}
         onChange={(e) =>
-          dispatch({ type: "SET_FIELD", path: "grade", value: Number(e.target.value) })
+          dispatch({ type: "SET_FIELD", path: "grade", value: e.target.value })
         }
-        options={GRADES}
+        options={Object.entries(GRADE_LABELS).map(([value, label]) => ({ value, label }))}
       />
       <Select
         name="language"
@@ -34,6 +32,7 @@ export function ProfileStep({ state, dispatch }: StepProps) {
           { value: "ru", label: "Русский" },
           { value: "kk", label: "Казахский" },
         ]}
+        hint="Есть ЕНТ на казахском и на русском языке."
       />
       <Input
         name="city"
