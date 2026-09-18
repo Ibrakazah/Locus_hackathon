@@ -1,0 +1,6 @@
+# Octarin capture — committed Codex config.
+#
+# Codex invokes `notify` at turn/session end; the wrapper sources OCTARIN_*
+# from the environment (or the repo .env) and POSTs a canonical IngestEvent.
+# Anyone who opens this repo and has OCTARIN_API_KEY in their env auto-sends.
+notify = ["bash", ".codex/hooks/run.sh"]

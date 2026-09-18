@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 dev-server.log
+
+# Octarin: never commit per-machine personal install secrets
+.octarin/octarin.env
+
+# Octarin: Python bytecode the capture hook regenerates on every run
+**/__pycache__/

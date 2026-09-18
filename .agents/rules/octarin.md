@@ -1,14 +1,3 @@
-<!-- BEGIN:nextjs-agent-rules -->
-
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
-
-<!-- octarin:start -->
 # Octarin — your git history, with the AI sessions behind it
 
 This repo is connected to **Octarin** over MCP. Octarin holds your team's
@@ -52,4 +41,3 @@ Prefer compact/summary tools; fetch transcripts and full bodies only when needed
 `get_spending`, and the analytics tool are Full-access only — call
 only the tools your key actually lists. A group-scoped key sees only its team's
 sessions and memories.
-<!-- octarin:end -->

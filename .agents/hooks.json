@@ -1,0 +1,14 @@
+{
+  "octarin": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bash .agents/octarin/run.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
