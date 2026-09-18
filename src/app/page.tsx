@@ -19,10 +19,11 @@ export default function HomePage() {
   };
 
   return (
-    <main className="flex flex-col gap-24">
-      <section className="relative flex flex-col items-start gap-8 overflow-hidden py-16 sm:py-24">
-        <HeroBackground />
-        <div className="relative flex flex-col items-start gap-8">
+    <main className="relative flex flex-col gap-24 overflow-hidden">
+      <HeroBackground />
+      <div className="relative flex flex-col gap-24">
+        <section className="py-16 sm:py-24">
+          <div className="relative flex flex-col items-start gap-8">
           <span className="rounded-full border border-line bg-paper px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
             AI-сервис поступления · LOCUS 2026
           </span>
@@ -71,6 +72,7 @@ export default function HomePage() {
           Порог — это минимум для участия в конкурсе, а не гарантия гранта. Мы показываем и порог направления, и реальные блокеры, и факты без источника помечаем как демо-данные.
         </p>
       </section>
+    </div>
     </main>
   );
 }
