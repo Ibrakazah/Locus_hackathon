@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "beforeSubmitPrompt": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "afterAgentResponse": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "postToolUse": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "postToolUseFailure": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "preCompact": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "stop": [{ "command": "bash .cursor/hooks/run.sh" }],
+    "sessionEnd": [{ "command": "bash .cursor/hooks/run.sh" }]
+  }
+}
