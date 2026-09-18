@@ -18,7 +18,7 @@ export default function RecommendationsPage() {
   const [newBudget, setNewBudget] = useState('5000');
   const [newPriority, setNewPriority] = useState<Priority>('prestige');
   const [diff, setDiff] = useState<{ programId: string; from: number; to: number; reason: string }[] | null>(null);
-  if (!hydrated) return <p>Загрузка…</p>;
+  if (!hydrated) return <p className="text-center text-sm text-muted">Загрузка…</p>;
 
   const now = useMemo(() => new Date(), []);
   const recs = useMemo(() => recommend(profile, CATALOG, now), [profile, now]);
@@ -37,61 +37,71 @@ export default function RecommendationsPage() {
   };
 
   return (
-    <main className="flex flex-col gap-4">
+    <main className="flex flex-col gap-5">
       <PathIndicator step={4} label="Рекомендации" />
-      <div className="flex flex-wrap gap-2">
+      <h2 className="text-center text-2xl font-extrabold tracking-tight">🎓 Куда <span className="grad-text">подходишь</span></h2>
+      <div className="flex flex-wrap justify-center gap-2">
         {cities.map((c) => <Chip key={c} active={city === c} onClick={() => setCity(c)}>{c === 'all' ? 'Все города' : c}</Chip>)}
       </div>
-      <Button variant="ghost" onClick={() => setWhatIf(true)}>Изменить вводные (what-if)</Button>
+      <button onClick={() => setWhatIf(true)} className="self-center text-xs font-semibold text-violet-300 hover:text-violet-200">
+        ⚙️ Изменить вводные (what-if)
+      </button>
       {diff && (
         <Card>
-          <h3 className="font-display text-xs font-extrabold uppercase">Что изменилось</h3>
-          <ul className="mt-1 text-sm">{diff.slice(0, 5).map((d) => (
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Что изменилось</h3>
+          <ul className="mt-2 flex flex-col gap-1 text-sm">{diff.slice(0, 5).map((d) => (
             <li key={d.programId}>{d.programId}: {d.from + 1} → {d.to + 1}. {d.reason}</li>
           ))}</ul>
         </Card>
       )}
-      {shown.map((r) => {
+      {shown.map((r, i) => {
         const p = CATALOG.find((x) => x.id === r.programId)!;
         const u = getUniversity(r.universityId)!;
         return (
-          <Card key={r.programId}>
-            <div className="flex flex-wrap items-center gap-2">
+          <Card
+            key={r.programId}
+            style={{ ['--i' as string]: Math.min(i, 5) }}
+            className={`rise transition-all ${sel.includes(r.programId) ? '!border-violet-400/60 shadow-[0_0_24px_rgba(139,92,246,0.3)]' : ''}`}
+          >
+            <div className="flex flex-wrap items-center gap-1.5">
               <Badge kind={r.matchLevel} />
               {r.reach && <Badge kind="reach" />}
               {p.demo ? <Badge kind="demo" /> : <Badge kind="source" />}
             </div>
-            <h3 className="mt-2 font-display text-base font-extrabold">{u.name} · {p.title}</h3>
-            <p className="text-xs text-smoke">{u.city} · {p.language.toUpperCase()} · {p.tuitionPerYear.toLocaleString('ru-RU')} {p.currency}/год</p>
-            {r.reach && <p className="mt-1 text-xs font-bold">Совпадение с требованиями не равно шансу поступления.</p>}
-            <ul className="mt-2 list-disc pl-5 text-sm">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
+            <h3 className="mt-3 text-lg font-bold">{u.name}</h3>
+            <p className="text-sm text-muted">{p.title}</p>
+            <p className="mt-1 text-xs text-faint">{u.city} · {p.language.toUpperCase()} · {p.tuitionPerYear.toLocaleString('ru-RU')} {p.currency}/год</p>
+            {r.reach && <p className="mt-2 rounded-xl bg-violet-500/10 p-2 text-xs font-semibold text-violet-200">Совпадение с требованиями не равно шансу поступления.</p>}
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
             {r.gaps.length > 0 && (
-              <ul className="mt-1 text-sm text-smoke">{r.gaps.map((g) => <li key={g.roadmapTaskId}>• {g.description}</li>)}</ul>
+              <ul className="mt-1 flex flex-col gap-1 text-sm text-muted">{r.gaps.map((g) => <li key={g.roadmapTaskId}>• {g.description}</li>)}</ul>
             )}
-            <p className="mt-1 text-xs text-smoke">{r.grantNote}</p>
-            <p className="mt-1 text-[11px] text-smoke">Источник: {p.source}{p.note ? ` ${p.note}` : ''}</p>
-            <div className="mt-2"><Chip active={sel.includes(r.programId)} onClick={() => toggleSel(r.programId)}>
-              {sel.includes(r.programId) ? '✓ в сравнение' : 'В сравнение'}
-            </Chip></div>
+            <p className="mt-1 text-xs text-faint">{r.grantNote}</p>
+            <p className="mt-1 text-[11px] text-faint">Источник: {p.source}{p.note ? ` ${p.note}` : ''}</p>
+            <div className="mt-3 border-t border-line pt-3">
+              <Chip active={sel.includes(r.programId)} onClick={() => toggleSel(r.programId)}>
+                {sel.includes(r.programId) ? '✓ В сравнении' : '⚖️ В сравнение'}
+              </Chip>
+            </div>
           </Card>
         );
       })}
       <div className="flex flex-col gap-2">
         <Link href={sel.length === 2 ? `/compare?a=${sel[0]}&b=${sel[1]}` : '/compare'}>
-          <Button>Сравнить {sel.length === 2 ? '(2)' : ''} →</Button>
+          <Button>Сравнить {sel.length === 2 ? '(2) ⚖️' : ''} →</Button>
         </Link>
         <Link href="/roadmap"><Button variant="ghost">Пропустить сравнение →</Button></Link>
       </div>
       <Sheet open={whatIf} onClose={() => setWhatIf(false)} title="Изменить вводные">
-        <label className="flex flex-col gap-1 text-sm font-bold">Бюджет $/год
-          <input value={newBudget} onChange={(e) => setNewBudget(e.target.value)} type="number" className="border-[3px] border-ink px-3 py-2" />
+        <label className="flex flex-col gap-2 text-sm font-semibold">Бюджет $/год
+          <input value={newBudget} onChange={(e) => setNewBudget(e.target.value)} type="number" className="glass min-h-[44px] rounded-2xl px-4 text-base outline-none focus:border-violet-400/60" />
         </label>
-        <div className="mt-3 flex gap-2">
+        <div className="mt-4 flex gap-2">
           {(['cost', 'prestige', 'language'] as Priority[]).map((v) => (
             <Chip key={v} active={newPriority === v} onClick={() => setNewPriority(v)}>{v}</Chip>
           ))}
         </div>
-        <div className="mt-4"><Button onClick={applyWhatIf}>Пересчитать</Button></div>
+        <div className="mt-4"><Button onClick={applyWhatIf}>✨ Пересчитать</Button></div>
       </Sheet>
     </main>
   );

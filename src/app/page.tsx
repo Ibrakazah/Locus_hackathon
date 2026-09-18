@@ -18,31 +18,50 @@ export default function HomePage() {
   };
 
   return (
-    <main className="flex flex-col gap-6">
-      <section className="flex flex-col gap-4">
-        <h1 className="font-display text-4xl font-black uppercase leading-[1.05]">
-          3 минуты → <span className="marker">3 варианта</span> и план
+    <main className="flex flex-col gap-10">
+      <section className="flex flex-col items-center gap-6 py-10 text-center">
+        <span className="glass rounded-full px-4 py-1.5 text-xs font-semibold text-violet-200">
+          ✨ AI-сервис поступления · LOCUS 2026
+        </span>
+        <h1 className="max-w-xl text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+          Три минуты — <span className="grad-text">три варианта</span> и план
         </h1>
-        <p className="border-l-4 border-mint pl-4 font-medium text-smoke">
-          Соберём маршрут поступления: куда, почему этот вариант подходит, и что делать следующим шагом.
+        <p className="max-w-md text-base leading-relaxed text-muted">
+          Персональный маршрут поступления: куда, почему этот вариант подходит, и что делать следующим шагом.
         </p>
-        <Link href="/profile"><Button>Начать анкету</Button></Link>
+        <div className="w-full max-w-xs">
+          <Link href="/profile"><Button>🚀 Начать анкету</Button></Link>
+        </div>
       </section>
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-sm font-extrabold uppercase">Попробовать на примере</h2>
-        {PERSONAS.map((p) => (
-          <Card key={p.id}>
-            <button type="button" onClick={() => tryPersona(p.id)} className="flex w-full flex-col items-start gap-1 text-left">
-              <span className="font-display text-base font-extrabold">{p.label}</span>
-              <span className="text-sm text-smoke">{p.hint}</span>
-              <span className="font-display text-xs font-bold uppercase text-mint-deep">Попробовать →</span>
-            </button>
-          </Card>
-        ))}
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-center text-lg font-bold">Попробовать на примере</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {PERSONAS.map((p, i) => (
+            <Card key={p.id} className="rise transition-all hover:bg-white/[0.07]" >
+              <button
+                type="button"
+                onClick={() => tryPersona(p.id)}
+                style={{ ['--i' as string]: i }}
+                className="flex w-full flex-col items-start gap-2 text-left"
+              >
+                <p className="text-base font-bold">{p.label}</p>
+                <p className="text-sm text-muted">{p.hint}</p>
+                <span className="mt-1 bg-gradient-to-r from-violet-300 to-blue-400 bg-clip-text text-xs font-bold uppercase tracking-wider text-transparent">
+                  Попробовать →
+                </span>
+              </button>
+            </Card>
+          ))}
+        </div>
       </section>
-      <section className="border-[3px] border-ink bg-ink p-4 text-cream shadow-brutal">
-        <h2 className="font-display text-sm font-extrabold uppercase">Честно про баллы и гранты</h2>
-        <p className="mt-1 text-sm text-cream/80">Порог — минимум для участия, а не гарантия. Грант — отдельной строкой, без галочек и процентов.</p>
+
+      <section className="glass rounded-3xl p-6 text-center">
+        <h2 className="text-base font-bold">🤝 Честно про баллы и гранты</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted">
+          Порог — это минимум для участия, а не гарантия гранта. Мы показываем
+          и порог направления, и реальные блокеры.
+        </p>
       </section>
     </main>
   );

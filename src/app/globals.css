@@ -1,86 +1,85 @@
 @import "tailwindcss";
 
-/* Роль: UI — дизайн-токены в духе референса ngc6543.ru:
-   Montserrat Black, кремовый фон, мятный акцент, чёрные бордеры,
-   жёсткие тени, квадратные углы (neo-brutalism). */
-
+/* Локус·Маршрут — обычный ИИ-стайл: тёмный фон, фиолетово-синие свечения, стекло. */
 @theme {
-  --color-cream: #fffef5;
-  --color-paper: #ffffff;
-  --color-ink: #161616;
-  --color-smoke: #555555;
-  --color-mint: #27ea9a;
-  --color-mint-soft: #d7f9e9;
-  --color-mint-deep: #0a8a54;
-  --color-danger: #ea2727;
-  --color-sun: #ffd23f;
-  --color-sky-soft: #d9efff;
+  --color-background: #06060c;
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-elevated: rgba(255, 255, 255, 0.07);
+  --color-foreground: #f4f4f6;
+  --color-muted: #a7a7b8;
+  --color-faint: #6d6d80;
+  --color-line: rgba(255, 255, 255, 0.1);
+  --color-accent: #8b5cf6;
+  --color-accent2: #3b82f6;
+  --color-glow: rgba(139, 92, 246, 0.35);
 
-  --font-sans: var(--font-montserrat), "Montserrat", system-ui, Arial, sans-serif;
-  --font-display: var(--font-montserrat), "Montserrat", system-ui, Arial, sans-serif;
-
-  --shadow-brutal: 5px 5px 0 0 #161616;
-  --shadow-brutal-sm: 3px 3px 0 0 #161616;
-  --shadow-brutal-xs: 2px 2px 0 0 #161616;
-  --shadow-brutal-mint: 3px 3px 0 0 #27ea9a;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
 }
 
-/* Светлая тема принудительно — как на референсе, без dark-mode. */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Фирменные свечения фона. */
+.ai-bg {
+  background:
+    radial-gradient(600px 400px at 15% 0%, rgba(139, 92, 246, 0.22), transparent 65%),
+    radial-gradient(700px 450px at 85% 10%, rgba(59, 130, 246, 0.18), transparent 65%),
+    radial-gradient(500px 500px at 50% 100%, rgba(139, 92, 246, 0.1), transparent 70%),
+    #06060c;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.grad-text {
+  background: linear-gradient(100deg, #c4b5fd 0%, #8b5cf6 45%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-glow {
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.45), 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 ::selection {
-  background: var(--color-mint);
-  color: #161616;
+  background: #8b5cf6;
+  color: #fff;
 }
 
-/* Range-слайдер в brutalist-стиле */
-input[type="range"].brutal-range {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-input[type="range"].brutal-range::-webkit-slider-runnable-track {
-  height: 12px;
-  background: #ffffff;
-  border: 2px solid #161616;
-}
-input[type="range"].brutal-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  margin-top: -8px;
-  background: #27ea9a;
-  border: 2px solid #161616;
-  box-shadow: 2px 2px 0 #161616;
-  border-radius: 0;
-}
-input[type="range"].brutal-range::-moz-range-track {
-  height: 12px;
-  background: #ffffff;
-  border: 2px solid #161616;
-}
-input[type="range"].brutal-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #27ea9a;
-  border: 2px solid #161616;
-  box-shadow: 2px 2px 0 #161616;
-  border-radius: 0;
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Маркер-выделение для заголовков, как мятный акцент референса */
-.marker {
-  background: linear-gradient(transparent 55%, var(--color-mint) 55%, var(--color-mint) 95%, transparent 95%);
-  padding: 0 0.1em;
+.rise {
+  animation: float-up 0.5s ease-out both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f52 transparent;
 }
