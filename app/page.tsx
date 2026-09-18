@@ -29,6 +29,12 @@ export default function Home() {
         >
           Roadmap (B)
         </Link>
+        <Link
+          href="/extracurriculars"
+          className="border-2 border-ink bg-paper px-5 py-3 font-display text-sm font-bold uppercase shadow-brutal-sm"
+        >
+          Активности (B)
+        </Link>
       </div>
     </div>
   );
