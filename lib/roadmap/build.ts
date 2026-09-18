@@ -53,6 +53,7 @@ export function buildRoadmap({
         done: false,
         kind: spec.kind,
         alert: spec.alert,
+        plannedDate: spec.plannedDate,
         source: gap.source ?? SRC,
       });
     }

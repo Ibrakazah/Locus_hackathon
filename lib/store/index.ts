@@ -16,12 +16,19 @@ export interface StoreState {
   goalProgramId: string | null;
   tasks: RoadmapTask[];
   doneTasks: Record<string, boolean>;
-  setProfile: (patch: Partial<Profile>) => void;
+  setProfile: (patch: ProfilePatch) => void;
   setGoal: (id: string | null) => void;
   setTasks: (tasks: RoadmapTask[]) => void;
   toggleTask: (id: string) => void;
   reset: () => void;
 }
+
+// Частичный патч с частичными вложенными kz/abroad — чтобы форма могла
+// обновлять одно поле, не затирая остальные.
+export type ProfilePatch = Partial<Omit<Profile, "kz" | "abroad">> & {
+  kz?: Partial<NonNullable<Profile["kz"]>>;
+  abroad?: Partial<NonNullable<Profile["abroad"]>>;
+};
 
 const noopStorage = {
   getItem: () => null,
@@ -36,7 +43,17 @@ export const useAppStore = create<StoreState>()(
       goalProgramId: null,
       tasks: [],
       doneTasks: {},
-      setProfile: (patch) => set((s) => ({ profile: { ...s.profile, ...patch } })),
+      setProfile: (patch) =>
+        set((s) => {
+          const { kz, abroad, ...rest } = patch;
+          const profile: Profile = { ...s.profile, ...rest };
+          if (kz) profile.kz = { ...(s.profile.kz ?? {}), ...kz } as NonNullable<Profile["kz"]>;
+          if (abroad)
+            profile.abroad = { ...(s.profile.abroad ?? {}), ...abroad } as NonNullable<
+              Profile["abroad"]
+            >;
+          return { profile };
+        }),
       setGoal: (id) => set({ goalProgramId: id }),
       setTasks: (tasks) =>
         set((s) => ({

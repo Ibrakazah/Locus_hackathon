@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useAppStore } from "@/lib/store";
 import { useHydrated } from "@/lib/store/useHydrated";
 import { DEMO_PROFILE } from "@/lib/store/demo";
@@ -12,25 +12,29 @@ import { recommendStub } from "@/lib/roadmap/recommendStub";
 export default function NextStepPage() {
   const hydrated = useHydrated();
   const profile = useAppStore((s) => s.profile);
+  const goalProgramId = useAppStore((s) => s.goalProgramId);
   const tasks = useAppStore((s) => s.tasks);
   const setTasks = useAppStore((s) => s.setTasks);
   const toggleTask = useAppStore((s) => s.toggleTask);
   const setProfile = useAppStore((s) => s.setProfile);
 
-  const recs = recommendStub();
+  const recs = useMemo(() => recommendStub(), []);
+  const goal = useMemo(
+    () => recs.find((r) => r.programId === goalProgramId) ?? recs[0],
+    [recs, goalProgramId],
+  );
 
   useEffect(() => {
     if (!hydrated) return;
     setTasks(
       buildRoadmap({
         profile,
-        goal: recs[0],
+        goal,
         prev: useAppStore.getState().tasks,
         now: new Date(),
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, profile, setTasks]);
+  }, [hydrated, profile, goal, setTasks]);
 
   if (!hydrated) {
     return <p className="p-6 text-sm text-smoke">Загрузка…</p>;

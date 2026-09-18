@@ -10,6 +10,19 @@ describe("useAppStore", () => {
     expect(useAppStore.getState().profile.route).toBe("kz");
   });
 
+  it("setProfile не затирает вложенные kz/abroad", () => {
+    useAppStore.getState().setProfile({
+      kz: { entProfile: "math-physics", interestedInNu: true },
+      abroad: { countries: ["uk"], gpa: 4.4 },
+    });
+    useAppStore.getState().setProfile({ kz: { gpa: 4.7 } });
+    useAppStore.getState().setProfile({ abroad: { budgetUsd: "5to15k" } });
+
+    const { kz, abroad } = useAppStore.getState().profile;
+    expect(kz).toMatchObject({ entProfile: "math-physics", interestedInNu: true, gpa: 4.7 });
+    expect(abroad).toMatchObject({ countries: ["uk"], gpa: 4.4, budgetUsd: "5to15k" });
+  });
+
   it("setGoal сохраняет цель", () => {
     useAppStore.getState().setGoal("p1");
     expect(useAppStore.getState().goalProgramId).toBe("p1");

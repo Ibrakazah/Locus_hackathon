@@ -7,6 +7,7 @@ export interface GapTaskSpec {
   title: string;
   kind: TaskKind;
   alert?: boolean;
+  plannedDate?: string;
 }
 
 function firstNotTakenPlannedDate(profile: Profile): string | undefined {
@@ -27,6 +28,7 @@ export function gapTaskSpec(gap: Gap, profile: Profile): GapTaskSpec {
           ? `Зарегистрироваться на экзамен к ${planned}`
           : "Зарегистрироваться на экзамен",
         kind: "exam_registration",
+        plannedDate: planned,
       };
     }
     case "score_gap":
