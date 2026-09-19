@@ -6,15 +6,16 @@ import { Badge, Button, Card, PathIndicator } from '@/components/ui';
 import { useAppStore, useHydrated } from '@/lib/store';
 import { CATALOG, getProgram, getUniversity } from '@/data/catalog';
 import { recommend } from '@/lib/engine';
+import { LANGUAGE_LABEL, fmtDate } from '@/lib/text';
 
 function rowsFor(ids: string[]): { label: string; vals: string[] }[] {
   const ps = ids.map((id) => getProgram(id)!);
   const rows: { label: string; vals: string[] }[] = [
     { label: '📍 Город', vals: ps.map((p) => p.city) },
-    { label: '🗣️ Язык', vals: ps.map((p) => p.language) },
+    { label: '🗣️ Язык', vals: ps.map((p) => LANGUAGE_LABEL[p.language] ?? p.language) },
     { label: '💰 Стоимость/год', vals: ps.map((p) => `${p.tuitionPerYear.toLocaleString('ru-RU')} ${p.currency}`) },
-    { label: '🏆 Грант', vals: ps.map((p) => p.grantPassScore ? `от ${p.grantPassScore.score} (${p.grantPassScore.year})` : 'проходные — проверить') },
-    { label: '📅 Дедлайн', vals: ps.map((p) => p.closesAt?.slice(0, 10) ?? '—') },
+    { label: '🏆 Грант', vals: ps.map((p) => p.grantPassScore ? `от ${p.grantPassScore.score} (${p.grantPassScore.year})${p.grantPassScore.demo ? ' [демо-данные]' : ''}` : 'проходные — [проверить]') },
+    { label: '📅 Дедлайн', vals: ps.map((p) => p.closesAt ? `${fmtDate(p.closesAt)}${p.demo ? ' [демо-данные]' : ''}` : '—') },
   ];
   if (ps.some((p) => p.track === 'ent')) rows.push({ label: 'ЕНТ, мин.', vals: ps.map((p) => p.admission.entMin ? String(p.admission.entMin) : '—') });
   if (ps.some((p) => p.track === 'sat')) rows.push({ label: 'SAT, мин.', vals: ps.map((p) => p.admission.satMin ? String(p.admission.satMin) : p.reach ? 'обязателен, порога нет' : '—') });

@@ -1,5 +1,6 @@
 import type { Gap, MatchLevel, Profile, Program, Recommendation } from './types';
 import { entThresholdFor, CLOSE_MARGIN_ENT } from '@/data/thresholds';
+import { FIELD_LABEL } from '@/lib/text';
 
 const KZT_PER_USD = 500;
 
@@ -249,7 +250,7 @@ export function recommend(profile: Profile, catalog: Program[], now: Date): Reco
     const reasons: string[] = [];
     if (fit.level === 'fits') reasons.push('Проходишь порог по основному требованию');
     else if (fit.level === 'close') reasons.push('Близко к порогу — хватит точечной подготовки');
-    if (fm >= 1) reasons.push(`Направление совпадает: ${profile.fields.join(', ')}`);
+    if (fm >= 1) reasons.push(`Направление совпадает: ${profile.fields.map((f) => FIELD_LABEL[f] ?? f).join(', ')}`);
     else if (fm >= 0.5) reasons.push('Смежное направление — требования почти те же');
     if (p.language === 'en' && (profile.language === 'en' || profile.ielts?.score != null)) reasons.push('Обучение на английском совпадает с твоим IELTS');
     if (pri === 'cost' && costFit > 0.7) reasons.push('Проходит по бюджету лучше остальных');

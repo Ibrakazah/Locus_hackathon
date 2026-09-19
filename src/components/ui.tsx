@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { fmtDate } from '@/lib/text';
 import type { MatchLevel } from '@/lib/types';
 
 export function Button({ children, onClick, variant, className = '', type }: {
@@ -76,8 +77,8 @@ export function PathIndicator({ step, total = 8, label }: { step: number; total?
   );
 }
 
-export function TaskCard({ title, deadline, done, onToggle, source }: {
-  title: string; deadline: string | null; done: boolean; onToggle: () => void; source: string;
+export function TaskCard({ title, deadline, done, onToggle, source, note }: {
+  title: string; deadline: string | null; done: boolean; onToggle: () => void; source: string; note?: string | null;
 }) {
   return (
     <div className={`glass rounded-2xl p-4 transition-all ${done ? 'opacity-60' : 'hover:bg-white/[0.07]'}`}>
@@ -86,8 +87,9 @@ export function TaskCard({ title, deadline, done, onToggle, source }: {
         <span>
           <span className={`text-[15px] font-medium ${done ? 'text-muted line-through' : 'text-foreground'}`}>{title}</span>
           <span className="mt-1 block text-xs text-faint">
-            {deadline ? `до ${deadline.slice(0, 10)} · ` : ''}{source}
+            {deadline ? `до ${fmtDate(deadline)} · ` : ''}{source}
           </span>
+          {note && <span className="mt-0.5 block text-[11px] text-amber-400/80">{note}</span>}
         </span>
       </label>
     </div>

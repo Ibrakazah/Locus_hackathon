@@ -7,6 +7,7 @@ import { CATALOG, getUniversity } from '@/data/catalog';
 import { recommend } from '@/lib/engine';
 import { diffRankings } from '@/lib/diff';
 import type { Priority } from '@/lib/types';
+import { LANGUAGE_LABEL } from '@/lib/text';
 
 export default function RecommendationsPage() {
   const hydrated = useHydrated();
@@ -44,7 +45,7 @@ export default function RecommendationsPage() {
         {cities.map((c) => <Chip key={c} active={city === c} onClick={() => setCity(c)}>{c === 'all' ? 'Все города' : c}</Chip>)}
       </div>
       <button onClick={() => setWhatIf(true)} className="self-center text-xs font-semibold text-violet-300 hover:text-violet-200">
-        ⚙️ Изменить вводные (what-if)
+        ⚙️ Изменить ответы
       </button>
       {diff && (
         <Card>
@@ -70,11 +71,16 @@ export default function RecommendationsPage() {
             </div>
             <h3 className="mt-3 text-lg font-bold">{u.name}</h3>
             <p className="text-sm text-muted">{p.title}</p>
-            <p className="mt-1 text-xs text-faint">{u.city} · {p.language.toUpperCase()} · {p.tuitionPerYear.toLocaleString('ru-RU')} {p.currency}/год</p>
+            <p className="mt-1 text-xs text-faint">{u.city} · {LANGUAGE_LABEL[p.language] ?? p.language} · {p.tuitionPerYear.toLocaleString('ru-RU')} {p.currency}/год</p>
             {r.reach && <p className="mt-2 rounded-xl bg-violet-500/10 p-2 text-xs font-semibold text-violet-200">Совпадение с требованиями не равно шансу поступления.</p>}
             <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
             {r.gaps.length > 0 && (
-              <ul className="mt-1 flex flex-col gap-1 text-sm text-muted">{r.gaps.map((g) => <li key={g.roadmapTaskId}>• {g.description}</li>)}</ul>
+              <div className="mt-2 rounded-xl bg-amber-500/10 p-2.5">
+                <p className="text-xs font-semibold text-amber-300">Не хватает:</p>
+                <ul className="mt-1 flex flex-col gap-1 pl-1 text-sm text-muted">
+                  {r.gaps.map((g) => <li key={g.roadmapTaskId}>• {g.description}</li>)}
+                </ul>
+              </div>
             )}
             <p className="mt-1 text-xs text-faint">{r.grantNote}</p>
             <p className="mt-1 text-[11px] text-faint">Источник: {p.source}{p.note ? ` ${p.note}` : ''}</p>
@@ -92,7 +98,7 @@ export default function RecommendationsPage() {
         </Link>
         <Link href="/roadmap"><Button variant="ghost">Пропустить сравнение →</Button></Link>
       </div>
-      <Sheet open={whatIf} onClose={() => setWhatIf(false)} title="Изменить вводные">
+      <Sheet open={whatIf} onClose={() => setWhatIf(false)} title="Изменить ответы">
         <label className="flex flex-col gap-2 text-sm font-semibold">Бюджет $/год
           <input value={newBudget} onChange={(e) => setNewBudget(e.target.value)} type="number" className="glass min-h-[44px] rounded-2xl px-4 text-base outline-none focus:border-violet-400/60" />
         </label>

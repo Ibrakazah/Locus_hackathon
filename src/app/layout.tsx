@@ -6,7 +6,7 @@ import './globals.css';
 const inter = Inter({ variable: '--font-inter', subsets: ['latin', 'cyrillic'], weight: ['400', '500', '600', '700', '800'] });
 
 export const metadata: Metadata = {
-  title: 'Локус·Маршрут — поступление',
+  title: 'Бағыт — поступление',
   description: 'Персональный маршрут поступления: куда, почему подходит, что делать следующим шагом.',
 };
 
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="fixed inset-x-0 top-0 z-40 border-b border-line bg-[#06060c]/70 backdrop-blur-xl">
           <nav className="mx-auto flex h-16 w-full max-w-2xl items-center justify-between px-4 sm:px-6">
             <Link href="/" className="bg-gradient-to-r from-violet-300 to-blue-400 bg-clip-text text-[15px] font-extrabold tracking-tight text-transparent">
-              Локус·Маршрут
+              Бағыт
             </Link>
             <div className="flex gap-5 text-[13px] font-medium text-muted">
               <Link href="/profile" className="transition-colors hover:text-foreground">Анкета</Link>
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <footer className="border-t border-line">
           <div className="mx-auto w-full max-w-2xl px-4 py-5 text-center text-xs text-faint">
-            Локус·Маршрут — LOCUS Hackathon 2026 · Кейс 2
+            Бағыт — LOCUS Hackathon 2026 · Кейс 2
           </div>
         </footer>
       </body>

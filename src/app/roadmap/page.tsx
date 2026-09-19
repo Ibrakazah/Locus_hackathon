@@ -6,6 +6,7 @@ import { useAppStore, useHydrated } from '@/lib/store';
 import { CATALOG, getProgram } from '@/data/catalog';
 import { recommend } from '@/lib/engine';
 import { buildRoadmap } from '@/lib/roadmap';
+import { fmtDate } from '@/lib/text';
 
 export default function RoadmapPage() {
   const hydrated = useHydrated();
@@ -41,11 +42,21 @@ export default function RoadmapPage() {
         </div>
       </div>
       <div className="flex flex-col gap-2.5">
-        {tasks.map((t, i) => (
-          <div key={t.id} style={{ ['--i' as string]: Math.min(i, 6) }} className="rise">
-            <TaskCard title={t.title} deadline={t.deadline} done={t.done} source={t.source} onToggle={() => toggleTask(t.id)} />
-          </div>
-        ))}
+        {tasks.map((t, i) => {
+          const prog = t.programId ? getProgram(t.programId) : null;
+          const progClosesAt = prog?.closesAt ?? null;
+          let note: string | null = null;
+          if (progClosesAt && t.deadline && progClosesAt !== t.deadline) {
+            note = `дедлайн вуза: ${fmtDate(progClosesAt)}${prog?.demo ? ' [демо-данные]' : ''}`;
+          } else if (prog?.demo) {
+            note = '[демо-данные]';
+          }
+          return (
+            <div key={t.id} style={{ ['--i' as string]: Math.min(i, 6) }} className="rise">
+              <TaskCard title={t.title} deadline={t.deadline} done={t.done} source={t.source} note={note} onToggle={() => toggleTask(t.id)} />
+            </div>
+          );
+        })}
       </div>
       <Link href="/next-step"><Button>Следующее действие ✨ →</Button></Link>
     </main>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Card, Chip, Input, PathIndicator } from '@/components/ui';
 import { useAppStore, useHydrated } from '@/lib/store';
-import type { Country, Field, Funding, Grade, Route } from '@/lib/types';
+import type { Country, ExamStatus, Field, Funding, Grade, Route } from '@/lib/types';
 
 // Условия показа — обычные функции-предикаты, не парсер строк.
 const showKzExams = (route: Route) => route !== 'abroad';
@@ -19,6 +19,17 @@ const COUNTRIES: { k: Country; label: string }[] = [
   { k: 'US', label: '🇺🇸 США' }, { k: 'UK', label: '🇬🇧 UK' }, { k: 'TR', label: '🇹🇷 Турция' },
 ];
 
+const ENT_PROFILES: { k: string; label: string }[] = [
+  { k: 'math-physics', label: 'Математика + Физика' },
+  { k: 'math-info', label: 'Математика + Информатика' },
+  { k: 'bio-chem', label: 'Биология + Химия' },
+  { k: 'chem-physics', label: 'Химия + Физика' },
+  { k: 'worldhistory-geography', label: 'Всемирная история + География' },
+  { k: 'worldhistory-law', label: 'Всемирная история + Право' },
+  { k: 'lang-worldhistory', label: 'Иностранный язык + История' },
+  { k: 'kazlit', label: 'Казахский + Казахская лит.' },
+];
+
 export default function ProfilePage() {
   const hydrated = useHydrated();
   const router = useRouter();
@@ -26,7 +37,9 @@ export default function ProfilePage() {
   const setProfile = useAppStore((s) => s.setProfile);
   const [step, setStep] = useState(0);
   const [exams, setExams] = useState<string[]>(['ent']);
-  const [entScore, setEntScore] = useState('96');
+  const [entStatus, setEntStatus] = useState<ExamStatus>('not_taken');
+  const [entProfile, setEntProfile] = useState('math-info');
+  const [entScore, setEntScore] = useState('');
   const [ieltsScore, setIeltsScore] = useState('6.5');
   const [satScore, setSatScore] = useState('1210');
   if (!hydrated) return <p className="text-center text-sm text-muted">Загрузка…</p>;
@@ -45,8 +58,15 @@ export default function ProfilePage() {
   const finish = () => {
     const patch: Partial<typeof profile> = {};
     if (showKzExams(profile.route)) {
-      if (exams.includes('ent')) patch.ent = { status: 'taken', score: Number(entScore) || null, profile: 'math-info' };
-      else patch.ent = { status: 'not_taken', score: null, profile: null };
+      if (exams.includes('ent')) {
+        patch.ent = {
+          status: entStatus,
+          score: entStatus === 'not_taken' ? null : (Number(entScore) || null),
+          profile: entProfile || null,
+        };
+      } else {
+        patch.ent = { status: 'not_taken', score: null, profile: null };
+      }
       if (exams.includes('ielts')) patch.ielts = { status: 'taken', score: Number(ieltsScore) || null };
       if (exams.includes('sat')) patch.sat = { status: 'taken', score: Number(satScore) || null };
       if (exams.includes('none')) {
@@ -67,7 +87,8 @@ export default function ProfilePage() {
       <PathIndicator step={2} label={`Анкета · ${steps[step]}`} />
 
       <Card className="rise">
-        <h2 className="text-center text-2xl font-extrabold tracking-tight">{titles[step]}</h2>
+        <p className="text-center text-xs font-semibold text-violet-300">Вопрос {step + 1} из 5</p>
+        <h2 className="mt-1 text-center text-2xl font-extrabold tracking-tight">{titles[step]}</h2>
 
         {step === 0 && (
           <div className="mt-5 flex flex-col gap-2">
@@ -113,14 +134,37 @@ export default function ProfilePage() {
                 <Chip key={v} active={exams.includes(v)} onClick={() => toggleExam(v)}>{l}</Chip>
               ))}
             </div>
-            {exams.includes('ent') && <Input label="E2 · ЕНТ балл" type="number" value={entScore} onChange={(e) => setEntScore(e.target.value)} />}
-            {exams.includes('ielts') && <Input label="E3 · IELTS overall" type="number" value={ieltsScore} onChange={(e) => setIeltsScore(e.target.value)} />}
-            {exams.includes('sat') && <Input label="E4 · SAT" type="number" value={satScore} onChange={(e) => setSatScore(e.target.value)} />}
+            {exams.includes('ent') && (
+              <div className="flex flex-col gap-3 rounded-2xl bg-white/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Статус ЕНТ</p>
+                <div className="flex flex-wrap gap-2">
+                  {([['taken', 'Сдал'], ['trial', 'Пробный'], ['not_taken', 'Не сдавал']] as [ExamStatus, string][]).map(([v, l]) => (
+                    <Chip key={v} active={entStatus === v} onClick={() => setEntStatus(v)}>{l}</Chip>
+                  ))}
+                </div>
+                {entStatus !== 'not_taken' ? (
+                  <Input label="ЕНТ балл (0–140)" type="number" value={entScore} onChange={(e) => setEntScore(e.target.value)} />
+                ) : (
+                  <p className="text-xs text-amber-300">Задача «записаться на ЕНТ» появится в плане автоматически.</p>
+                )}
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Профильные предметы</p>
+                <div className="flex flex-wrap gap-2">
+                  {ENT_PROFILES.map((ep) => (
+                    <Chip key={ep.k} active={entProfile === ep.k} onClick={() => setEntProfile(ep.k)}>{ep.label}</Chip>
+                  ))}
+                </div>
+              </div>
+            )}
+            {exams.includes('ielts') && <Input label="IELTS overall" type="number" value={ieltsScore} onChange={(e) => setIeltsScore(e.target.value)} />}
+            {exams.includes('sat') && <Input label="SAT балл" type="number" value={satScore} onChange={(e) => setSatScore(e.target.value)} />}
             <div className="glass flex items-center justify-between gap-3 rounded-2xl p-4">
               <span className="text-sm font-semibold">Интересует NU?</span>
-              <Chip active={!!profile.interestedInNu} onClick={() => setProfile({ interestedInNu: !profile.interestedInNu })}>{profile.interestedInNu ? 'Да ✨' : 'Нет'}</Chip>
+              <div className="flex gap-2">
+                <Chip active={!!profile.interestedInNu} onClick={() => setProfile({ interestedInNu: true })}>Да ✨</Chip>
+                <Chip active={!profile.interestedInNu} onClick={() => setProfile({ interestedInNu: false })}>Нет</Chip>
+              </div>
             </div>
-            {profile.interestedInNu && <Input label="K11 · GPA аттестата (из 5.0)" type="number" value={profile.gpa ?? ''} onChange={(e) => setProfile({ gpa: e.target.value ? Number(e.target.value) : null })} />}
+            {profile.interestedInNu && <Input label="GPA аттестата (из 5.0)" type="number" value={profile.gpa ?? ''} onChange={(e) => setProfile({ gpa: e.target.value ? Number(e.target.value) : null })} />}
           </div>
         )}
       </Card>

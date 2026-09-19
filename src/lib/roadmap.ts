@@ -68,14 +68,15 @@ export function buildRoadmap({ profile, goal, recs, prev, now }: BuildArgs): Roa
     { id: 'base:documents', programId: null, title: 'Собрать документы: удостоверение, фото, аттестат', deadline: backFrom(closes, LEAD_DAYS.documents, now), kind: 'documents', done: false, source: '[демо-данные]' },
   );
   if (profile.grade === 11 && roadmapMode(profile, now) === 'preparation') {
-    tasks.push({ id: 'base:trial-ent', programId: null, title: 'Пробный ЕНТ (январь 2027) — без конкурса гранта до мая', deadline: CALENDAR.find((c) => c.id === 'ent-jan')!.date, kind: 'exam', done: false, source: 'testcenter.kz' });
+    const entJan = CALENDAR.find((c) => c.id === 'ent-jan')!;
+    tasks.push({ id: 'base:trial-ent', programId: null, title: 'Пробный ЕНТ (январь 2027) — без конкурса гранта до мая', deadline: entJan.date, kind: 'exam', done: false, source: entJan.demo ? `${entJan.source} [демо-данные]` : entJan.source });
   }
   // NU-алерт: открытие в будущем
   if (profile.interestedInNu) {
     const opens = CALENDAR.find((c) => c.id === 'nu-opens')!;
     const d = daysUntil(now, opens.date);
     if (d > 0) {
-      tasks.push({ id: 'base:nu-opens', programId: null, title: `NU открывается через ${d} дн. — подготовить IELTS/GPA`, deadline: opens.date, kind: 'application', done: false, source: opens.source });
+      tasks.push({ id: 'base:nu-opens', programId: null, title: `NU открывается через ${d} дн. — подготовить IELTS/GPA`, deadline: opens.date, kind: 'application', done: false, source: opens.demo ? `${opens.source} [демо-данные]` : opens.source });
     }
   }
   // UCAS-алерт
@@ -83,7 +84,7 @@ export function buildRoadmap({ profile, goal, recs, prev, now }: BuildArgs): Roa
     const ucas = CALENDAR.find((c) => c.id === 'ucas-oxbridge')!;
     const d = daysUntil(now, ucas.date);
     if (d > 0 && d <= 60) {
-      tasks.push({ id: 'base:ucas', programId: null, title: `⚠️ UCAS Oxbridge: ${ucas.date.slice(0, 10)} — осталось ${d} дн.: Personal Statement`, deadline: ucas.date, kind: 'application', done: false, source: ucas.source });
+      tasks.push({ id: 'base:ucas', programId: null, title: `⚠️ UCAS Oxbridge: ${ucas.date.slice(0, 10)} — осталось ${d} дн.: Personal Statement`, deadline: ucas.date, kind: 'application', done: false, source: ucas.demo ? `${ucas.source} [демо-данные]` : ucas.source });
     }
   }
 

@@ -6,6 +6,7 @@ import { Badge, Button, Card, PathIndicator } from '@/components/ui';
 import { useAppStore, useHydrated } from '@/lib/store';
 import { CATALOG, getProgram, getUniversity } from '@/data/catalog';
 import { recommend } from '@/lib/engine';
+import { fmtDate } from '@/lib/text';
 import { buildRoadmap, nextStep } from '@/lib/roadmap';
 import { diagnosis } from '@/lib/text';
 import { buildReportText } from '@/lib/report';
@@ -104,7 +105,10 @@ export default function ReportPage() {
                 </div>
                 <p className="text-sm font-bold">{u.name}</p>
                 <p className="text-xs text-muted">{p.title}</p>
-                <p className="text-[11px] text-faint">「{FIT_LABEL[r.matchLevel]}」{r.gaps.length ? ` · блокеры: ${r.gaps.length}` : ` · ${r.grantNote}`}</p>
+                {r.gaps.length > 0
+                  ? <p className="text-[11px] font-semibold text-amber-300">Не хватает: {r.gaps[0].description.slice(0, 60)}{r.gaps[0].description.length > 60 ? '…' : ''}</p>
+                  : <p className="text-[11px] text-faint">{FIT_LABEL[r.matchLevel]} · {r.grantNote}</p>
+                }
               </Card>
             );
           })}
@@ -121,7 +125,7 @@ export default function ReportPage() {
         </div>
         <ul className="mt-3 flex list-disc flex-col gap-1 pl-5 text-sm text-muted">
           {soon.map((t) => (
-            <li key={t.id}>{t.title}{t.deadline ? ` — до ${t.deadline.slice(0, 10)}` : ''}</li>
+            <li key={t.id}>{t.title}{t.deadline ? ` — до ${fmtDate(t.deadline)}` : ''}</li>
           ))}
         </ul>
       </Card>
@@ -129,7 +133,7 @@ export default function ReportPage() {
       {next && (
         <Card className="!border-violet-400/40 py-6 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-violet-300">⚡ Следующий шаг</p>
-          <p className="mt-2 text-lg font-bold">{next.title}{next.deadline ? ` · до ${next.deadline.slice(0, 10)}` : ''}</p>
+          <p className="mt-2 text-lg font-bold">{next.title}{next.deadline ? ` · до ${fmtDate(next.deadline)}` : ''}</p>
         </Card>
       )}
 
