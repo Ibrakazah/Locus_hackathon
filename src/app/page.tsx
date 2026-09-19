@@ -1,93 +1,78 @@
-import Link from "next/link";
-import { Badge, Button, Card } from "@/components/ui";
-import { getUniversityCount } from "@/lib/data";
-
-export const dynamic = "force-static";
-
-const STEPS = [
-  { n: "01", title: "Анкета", text: "Класс, баллы ЕНТ и комбинация профильных предметов" },
-  { n: "02", title: "Диагностика", text: "5 осей профиля: академика, финансы, локация, карьера, кампус" },
-  { n: "03", title: "Подбор вузов", text: "Минимум 3 вуза с объяснением «почему» и честными блокерами" },
-  { n: "04", title: "Roadmap", text: "Таймлайн с дедлайнами и один чёткий следующий шаг" },
-];
+'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button, Card } from '@/components/ui';
+import { HeroBackground } from '@/components/hero-bg';
+import { PERSONAS } from '@/data/personas';
+import { useAppStore } from '@/lib/store';
 
 export default function HomePage() {
-  const count = getUniversityCount();
+  const router = useRouter();
+  const setProfile = useAppStore((s) => s.setProfile);
+  const setGoal = useAppStore((s) => s.setGoal);
+
+  const tryPersona = (id: string) => {
+    const p = PERSONAS.find((x) => x.id === id)!;
+    setProfile({ ...p.profile });
+    setGoal(null);
+    router.push('/recommendations');
+  };
+
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-12 sm:px-6 sm:py-16">
-      <section className="flex flex-col items-start gap-6">
-        <Badge tone="emerald">LOCUS Hackathon 2026 · Кейс 2</Badge>
-        <h1 className="font-display text-4xl font-black uppercase leading-[1.05] tracking-tight sm:text-6xl">
-          Твой личный маршрут <span className="marker">поступления</span> в вуз
-        </h1>
-        <p className="max-w-2xl border-l-4 border-mint pl-4 text-lg font-medium text-smoke">
-          Анкета по правилам ЕНТ → диагностика → подбор вузов Казахстана с обоснованием →
-          roadmap с дедлайнами → один чёткий следующий шаг.
-        </p>
-        <div className="flex flex-wrap items-center gap-4">
-          <Link href="/onboarding">
-            <Button size="lg">Построить маршрут</Button>
+    <main className="relative flex flex-col gap-24 overflow-hidden">
+      <HeroBackground />
+      <div className="relative flex flex-col gap-24">
+        <section className="py-16 sm:py-24">
+          <div className="relative flex flex-col items-start gap-8">
+          <span className="rounded-full border border-line bg-paper px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+            AI-сервис поступления · LOCUS 2026
+          </span>
+          <h1 className="max-w-3xl font-serif text-6xl leading-[0.95] tracking-[-0.02em] sm:text-7xl">
+            Три минуты — три варианта <span className="italic">и план</span>
+          </h1>
+          <p className="max-w-md text-base leading-relaxed text-muted">
+            Персональный маршрут поступления: куда, почему этот вариант подходит, и что делать следующим шагом.
+          </p>
+          <Link href="/profile" className="mt-2 w-full max-w-[280px]">
+            <Button full>Начать анкету</Button>
           </Link>
-          <Link href="/results">
-            <Button size="lg" variant="secondary">
-              Смотреть результаты
-            </Button>
-          </Link>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <div className="border-2 border-ink bg-paper px-4 py-2 shadow-brutal-xs">
-            <span className="font-display text-2xl font-black">{count}</span>
-            <span className="ml-2 font-display text-xs font-bold uppercase text-smoke">
-              вузов в базе
-            </span>
-          </div>
-          <div className="border-2 border-ink bg-paper px-4 py-2 shadow-brutal-xs">
-            <span className="font-display text-2xl font-black">140</span>
-            <span className="ml-2 font-display text-xs font-bold uppercase text-smoke">
-              макс. балл ЕНТ
-            </span>
-          </div>
-          <div className="border-2 border-ink bg-paper px-4 py-2 shadow-brutal-xs">
-            <span className="font-display text-2xl font-black">13</span>
-            <span className="ml-2 font-display text-xs font-bold uppercase text-smoke">
-              комбинаций предметов
-            </span>
-          </div>
         </div>
       </section>
 
-      <section className="flex flex-col gap-5">
-        <h2 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
-          Как это работает
-        </h2>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s) => (
-            <Card key={s.n} className="flex flex-col gap-2">
-              <span className="inline-flex w-fit border-2 border-ink bg-mint px-2 py-0.5 font-display text-sm font-black shadow-brutal-xs">
-                {s.n}
+      <section className="flex flex-col gap-8">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">Примеры</h2>
+          <span className="font-mono text-[11px] text-faint">3 сценария</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {PERSONAS.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => tryPersona(p.id)}
+              style={{ ['--i' as string]: i }}
+              className="group rise flex flex-col gap-6 rounded-xl border border-line bg-paper p-6 text-left transition-colors hover:border-ink"
+            >
+              <div className="flex flex-1 flex-col gap-2">
+                <p className="text-lg font-semibold tracking-tight">{p.label}</p>
+                <p className="text-sm leading-relaxed text-muted">{p.hint}</p>
+              </div>
+              <span className="flex items-center gap-2 text-[13px] font-semibold">
+                <span className="border-b border-ink">Попробовать</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
               </span>
-              <h3 className="font-display text-lg font-extrabold uppercase">{s.title}</h3>
-              <p className="text-sm font-medium text-smoke">{s.text}</p>
-            </Card>
+            </button>
           ))}
         </div>
       </section>
 
-      <section className="border-[3px] border-ink bg-ink p-6 text-cream shadow-brutal sm:p-8">
-        <h2 className="font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
-          Честно про баллы и гранты
-        </h2>
-        <p className="mt-3 max-w-3xl font-medium text-cream/80">
-          Порог — это минимум для участия, а не гарантия гранта. На топ-направления
-          (медицина, IT, право) проходные баллы прошлого года — 100+. Мы показываем
-          и порог направления, и минимумы по предметам, и реальные блокеры.
+      <section className="rounded-xl border border-line bg-paper p-8">
+        <h2 className="text-sm font-semibold tracking-tight">Честно про баллы и гранты</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+          Порог — это минимум для участия в конкурсе, а не гарантия гранта. Мы показываем и порог направления, и реальные блокеры, и факты без источника помечаем как демо-данные.
         </p>
-        <div className="mt-5">
-          <Link href="/onboarding">
-            <Button size="lg">Начать анкету</Button>
-          </Link>
-        </div>
       </section>
+    </div>
     </main>
   );
 }

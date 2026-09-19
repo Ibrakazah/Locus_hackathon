@@ -1,0 +1,37 @@
+---
+description: Octarin — your git history with the AI coding sessions behind it (commits, PRs, decisions, conventions, gotchas) over MCP. Consult when looking at code you didn't write, reviewing a PR, inheriting prior context, or recording a durable decision.
+alwaysApply: false
+---
+
+# Octarin — your git history, with the AI sessions behind it
+
+This repo is connected to **Octarin** over MCP: your team's **commits and pull
+requests linked to the AI coding sessions that produced them**, plus a curated
+shared **Memory** of decisions, conventions and gotchas. Reach for it when it
+earns its place — to inherit context you'd otherwise rediscover — not as a reflex
+on every turn.
+
+## Start from the code
+- **Looking at code you didn't write, and it matters?** `why_this_code(path, line)`
+  — one call: the commits that wrote those lines, what each was for, the sessions
+  behind them (goal/summary/decisions), the PRs they landed in, AND the team's
+  memories about that file. Prefer it over calling `file_history` /
+  `memory_for_file` / `blame_sessions` / `commit_history` separately.
+- **Reviewing or continuing a PR?** `pr_context("#123")` — its story, commits,
+  contributors and every contributing session.
+- **Starting non-trivial work in an unfamiliar area** — `memory_recall(query)` to
+  inherit standing decisions/conventions before relitigating one. A no-result
+  answer is fine — proceed. (Skip it for a quick, self-contained edit.)
+- **Sweeping rather than pinpointing** — `commit_history` (repo/path/author/date
+  → what shipped), `file_history(path)` (a file's or folder's session history),
+  `get_session_transcript` only when you need exact steps.
+- **Learned something durable?** Write `memory_record_decision` / `memory_add`,
+  anchored to the repo + files so it resurfaces.
+
+## Cost & scope
+- Prefer compact tools; fetch transcripts/full bodies only when needed.
+- `list_teammates` (roster) + `team_activity` (who's doing what) are available to
+  Engineer keys; spend totals, `get_spending`, and analytics are Full-access
+  only. Group-scoped keys see only their team, and the org-wide surfaces
+  (`why_this_code`, `blame_sessions`, `commit_history`, `pr_context`,
+  `file_history`, `graph_*`) decline for them.

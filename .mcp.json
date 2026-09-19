@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "octarin": {
+      "type": "http",
+      "url": "https://api.octarin.ai/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer ${OCTARIN_MCP_KEY}"
+      }
+    }
+  }
+}

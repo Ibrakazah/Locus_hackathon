@@ -1,0 +1,5 @@
+# Octarin team capture config (committed; SAFE to share — no secret here).
+# Each teammate runs `npx octarin-cli login` once on their machine — the per-user
+# ingest key lands in ~/.octarin/octarin.env (mode 600), never in git.
+OCTARIN_PROJECT=my-hack-teams/default
+OCTARIN_INGEST_URL=https://api.octarin.ai/v1/ingest
